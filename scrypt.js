@@ -24,6 +24,9 @@ let isBlocked = false;
 
 let activeTimer = null;
 
+let hasBlockOccurred = false;
+let hasDecryptionOccurred = false;
+
 // --- DOM Елементи ---
 
 // Кнопка рестарту та модальне вікно
@@ -71,10 +74,11 @@ let rules = `<h2>1. Загальна концепція та Мета</h2>
 </ul>
 
 <h2>3. Баланс за кількістю гравців</h2>
+<p>Кількість раундів динамічно адаптується під групу за формулою: <b>10 мінус кількість гравців</b>.</p>
 <ul>
-<li><b>2 гравця:</b> 1 картка диверсанта, 1 зайва картка ролі, 5 раундів.</li>
-<li><b>3-4 гравця:</b> 1 картка диверсанта, 1 зайва картка ролі, 4 раунди.</li>
-<li><b>5-6 гравців:</b> 2 картки диверсанта, 2 зайві карти ролі, 3 раунди.</li>
+<li><b>2 гравця:</b> 1 картка диверсанта, 1 зайва картка ролі, 8 раундів.</li>
+<li><b>3-4 гравця:</b> 1 картка диверсанта, 1 зайва картка ролі, 7-6 раундів.</li>
+<li><b>5-6 гравців:</b> 2 картки диверсанта, 2 зайві карти ролі, 5-4 раундів.</li>
 </ul>
 
 <h2>4. Хід гри</h2>
@@ -85,21 +89,21 @@ let rules = `<h2>1. Загальна концепція та Мета</h2>
 <p><b>Крок 1. Подія Середовища (Кидок кубика d6)</b><br>
 Додаток генерує випадкову подію на поточний раунд:<br>
 <ul>
-<li><b>Блок:</b> Ввід коду повністю блокується на цей раунд.</li>
+<li><b>Блок:</b> Ввід коду повністю блокується на цей раунд <i>(може випасти лише 1 раз за гру)</i>.</li>
 <li><b>Поспіх:</b> Час на обговорення скорочується вдвічі.</li>
 <li><b>Мовчанка:</b> Обговорення відбувається повністю без слів — тільки жестами та мімікою.</li>
-<li><b>Розкриття:</b> Додаток відкриває зайві скинуті карти ролей (гравці дізнаються, чи є в грі диверсанти, і скільки їх). При гри в парі - 1 додаткова підказка.</li>
+<li><b>Розкриття:</b> Додаток відкриває зайві скинуті карти ролей.</li>
 <li><b>Діагностика:</b> Додаток генерує +1 додаткову відкриту підказку.</li>
-<li><b>Дешифрування (Wordle-сканер):</b> На цьому раунді замок змінює логіку. Замість загальної індикації (Mastermind), він підсвічує кожну конкретну цифру окремо (Червоний/Жовтий/Зелений), точно вказуючи, де допущена помилка.</li>
+<li><b>Дешифрування (Wordle-сканер):</b> Замок змінює логіку. Замість загальної індикації (Mastermind), він підсвічує кожну конкретну цифру окремо (Червоний/Жовтий/Зелений) <i>(може випасти лише 1 раз за гру)</i>.</li>
 </ul></p>
 
 <p><b>Крок 2. Обговорення та Дедукція</b><br>
 Таймер: Кількість гравців × 1 хв.<br>
-Гравці аналізують результати попередніх вводів, обговорюють нові гіпотези та домовляються, яку комбінацію вводити.</p>
+Гравці обговорюють гіпотези. <b>Замок активний</b>, тому гравці можуть виставляти потенційний код прямо під час обговорення.</p>
 
 <p><b>Крок 3. Ввід</b><br>
 Таймер: 10 секунд.<br>
-Капітан (або призначений гравець) вводить узгоджений код у додаток. Якщо код не введено вчасно, спроба згорає, і раунд завершується без інформації від замка.</p>`;
+Фінальне вікно для прийняття рішення. Капітан має встигнути натиснути кнопку "ВВІД". Якщо код не відправлено вчасно, спроба згорає.</p>`;
 
 let titleEvent1 = "ПОДІЯ: БЛОК";
 let event1 = "Ввід коду <b>повністю блокується</b> на цей раунд.";
@@ -118,7 +122,6 @@ let event5 = "Додаток генерує <b>+1 додаткову відкр�
 
 let titleEvent6 = "ПОДІЯ: ДЕШИФРУВАННЯ";
 let event6 = "На цьому раунді замок змінює логіку. Замість загальної індикації (Mastermind), він підсвічує кожну конкретну цифру окремо (<b>Червоний/Жовтий/Зелений</b>), точно вказуючи, де допущена помилка.";
-
 
 // Допоміжна функція для генерації строгих цілих чисел
 function getRandomInt(min, max) {
@@ -145,7 +148,7 @@ function generateHints(code) {
 
     let positionX;
     let positionY;
-    let str1;
+    let str;
     let isConditionTrue = false;
 
     let max = code[0];
@@ -171,19 +174,19 @@ function generateHints(code) {
         positionY = getRandomInt(0, 2);
     }
 
-    str1 = code[positionX] > code[positionY] ? "більша" : "менша";
-    hints.add(`Цифра №${positionX + 1} ${str1} за цифру №${positionY + 1}.`);
+    str = code[positionX] > code[positionY] ? "більша" : "менша";
+    hints.add(`Цифра №<b>${positionX + 1}</b> <b>${str}</b> за цифру №<b>${positionY + 1}</b>.`);
 
     // 2. Парність цифри 
     positionX = getRandomInt(0, 2);
-    str1 = code[positionX] % 2 === 0 ? "парна" : "непарна";
-    hints.add(`Цифра №${positionX + 1} — ${str1}.`);
+    str = code[positionX] % 2 === 0 ? "парна" : "непарна";
+    hints.add(`Цифра №<b>${positionX + 1}</b> — <b>${str}</b>.`);
 
     // 3. Найбільша цифра
-    hints.add(`Цифра №${positionMax + 1} — найбільша.`);
+    hints.add(`Цифра №<b>${positionMax + 1}</b> — <b>найбільша</b>.`);
 
     // 4. Різниця між найбільшою та найменшою
-    hints.add(`Різниця між найбільшою та найменшою цифрою в коді дорівнює ${max - min}.`);
+    hints.add(`Різниця між найбільшою та найменшою цифрою в коді дорівнює <b>${max - min}</b>.`);
 
     // 5. Сусіди
     if (Math.abs(code[0] - code[1]) === 1 ||
@@ -193,26 +196,26 @@ function generateHints(code) {
     }
 
     if(isConditionTrue) {
-        hints.add(`У коді є дві цифри-сусіди.`);
+        hints.add(`У коді <b>є</b> дві цифри-сусіди.`);
     } else {
-        hints.add(`У коді немає жодних двох цифр-сусідів.`);
+        hints.add(`У коді <b>немає</b> жодних двох цифр-сусідів.`);
     }
 
     // 6. Найбільша цифра і сума двох інших
-    str1 = code[positionMax] > code[0] + code[1] + code[2] - code[positionMax] ? "більша" : "менша";
-    hints.add(`Найбільша цифра в коді ${str1} за суму двох інших цифр.`);
+    str = code[positionMax] > code[0] + code[1] + code[2] - code[positionMax] ? "більша" : "менша";
+    hints.add(`Найбільша цифра в коді <b>${str}</b> за суму двох інших цифр.`);
 
     // 7. Парність суми всіх цифр
-    str1 = (code[0] + code[1] + code[2]) % 2 === 0 ? "парна" : "непарна";
-    hints.add(`Сума всіх трьох цифр ${str1}`);
+    str = (code[0] + code[1] + code[2]) % 2 === 0 ? "парна" : "непарна";
+    hints.add(`Сума всіх трьох цифр <b>${str}</b>.`);
 
     // 8. Однакова або різна парність двох цифр
     positionX = getRandomInt(0, 2);
     positionY = getRandomInt(0, 2);
     while(positionX === positionY) positionY = getRandomInt(0, 2);
 
-    str1 = code[positionX] % 2 === code[positionY] % 2 ? "однакову" : "різну";
-    hints.add(`Цифри на позиціях ${positionX + 1} та ${positionY + 1} мають ${str1} парність.`);
+    str = code[positionX] % 2 === code[positionY] % 2 ? "однакову" : "різну";
+    hints.add(`Цифри на позиціях <b>${positionX + 1}</b> та <b>${positionY + 1}</b> мають <b>${str}</b> парність.`);
     
     // 9. Сума цифр і 9
     positionX = getRandomInt(0, 2);
@@ -221,9 +224,8 @@ function generateHints(code) {
         positionX = getRandomInt(0, 2);
         positionY = getRandomInt(0, 2);
     }
-    str1 = code[positionX] + code[positionY] > 9 ? "більша" : "менша";
-    hints.add(`Сума цифр на позиціях ${positionX+1} та ${positionY+1} суворо ${str1} за 9.`)
-
+    str = code[positionX] + code[positionY] > 9 ? "більша" : "менша";
+    hints.add(`Сума цифр на позиціях <b>${positionX+1}</b> та <b>${positionY+1}</b> суворо <b>${str}</b> за 9.`);
 
     // 10. Сума цифр і кратність 3
     positionX = getRandomInt(0, 2);
@@ -231,8 +233,8 @@ function generateHints(code) {
     while(positionX === positionY) {
         positionY = getRandomInt(0, 2);
     }
-    str1 = (code[positionX] + code[positionY]) % 3 === 0 ? "кратна" : "некратна";
-    hints.add(`Сума цифр на позиціях ${positionX+1} та ${positionY+1} ${str1} 3.`)
+    str = (code[positionX] + code[positionY]) % 3 === 0 ? "кратна" : "некратна";
+    hints.add(`Сума цифр на позиціях <b>${positionX+1}</b> та <b>${positionY+1}</b> <b>${str}</b> 3.`);
 
     // Тасування підказок методом Фішера-Ейтса
     let hintsArray = Array.from(hints);
@@ -332,8 +334,7 @@ function inputCode(code) {
         return;
     }
     
-    // Якщо гра триває, виводимо результат і ставимо таймер на наступний раунд
-    outputData("НЕПРАВИЛЬНИЙ КОД", result);
+    outputData("НЕПРАВИЛЬНИЙ КОД", result, 'alert-text');
     setTimeout(toNewRound, 6000);
 }
 
@@ -342,6 +343,7 @@ function inputCode(code) {
 function lockBlock(){
     isBlocked = true;
     outputText(titleEvent1, event1, toDiscuss)
+    hasBlockOccurred = true;
 }
 
 function haste(){
@@ -372,11 +374,21 @@ function diagnostic(){
 function descript(){
     isWordleCheck = true;
     outputText(titleEvent6, event6, toDiscuss)
+    hasDecryptionOccurred = true
 }
 
+// Функція рандомної генерації
 function generateEvent() {
-    let eventNum = getRandomInt(1, 6);
-    
+    let eventNum;
+    let valid = false;
+
+    while (!valid) {
+        eventNum = getRandomInt(1, 6);
+        if (eventNum === 1 && hasBlockOccurred) continue;
+        if (eventNum === 6 && hasDecryptionOccurred) continue;
+        valid = true;
+    }
+
     switch (eventNum) {
         case 1: lockBlock(); break;
         case 2: haste(); break;
@@ -387,14 +399,23 @@ function generateEvent() {
     }
 }
 
+// Обгортки для унікальних подій, щоб фіксувати їх використання (і для ручного, і для авто-режиму)
+function triggerBlockEvent() {
+    hasBlockOccurred = true;
+    lockBlock();
+}
+
+function triggerDecryptionEvent() {
+    hasDecryptionOccurred = true;
+    descript();
+}
+
 // ПОЧАТОК ГРИ
 function startGame() {
     generateCode();
     hintsList = generateHints(gameCode);
 
-    if (playersNumber === 2) roundsNum = 5;
-    else if (playersNumber < 5) roundsNum = 4;
-    else roundsNum = 3;
+    roundsNum = 10 - playersNumber;
 
     initRoles(playersNumber);
 
@@ -482,12 +503,12 @@ function toInputCode() {
     });
 }
 
-function toWin(){
-    outputData('КОД ПРАВИЛЬНИЙ!', 'Перемога мирних')
+function toWin() {
+    outputData('КОД ПРАВИЛЬНИЙ!', 'Перемога мирних', 'title-secondary green-text');
 }
 
-function toLose(){
-    outputData('КОД НЕПРАВИЛЬНИЙ! Спроби закінчились', 'Перемога диверсантів')
+function toLose() {
+    outputData('КОД НЕПРАВИЛЬНИЙ! Спроби закінчились', 'Перемога диверсантів', 'alert-text');
 }
 
 function toRestart() {
@@ -497,6 +518,8 @@ function toRestart() {
     nextHintNumber = 0;
     isWordleCheck = false;
     isBlocked = false;
+    hasBlockOccurred = false;
+    hasDecryptionOccurred = false;
     roleDeck = [];
     hintsList = [];
     
@@ -556,16 +579,18 @@ function outputText(title, text, action = null) {
     };
 }
 
-function outputData(title, text) {
-    // Ховаємо активні блоки
+function outputData(title, text, titleClass = "alert-text") {
     document.getElementById('round-actions').classList.add('hidden');
     document.getElementById('round-timer').classList.add('hidden');
     document.getElementById('round-input').classList.add('hidden');
     document.getElementById('round-manual-event').classList.add('hidden');
 
-    // Показуємо результат
     const resultBlock = document.getElementById('round-result');
-    document.getElementById('result-status').textContent = title;
+    const titleEl = document.getElementById('result-status');
+    
+    titleEl.textContent = title;
+    titleEl.className = titleClass; 
+    
     document.getElementById('result-stats-box').innerHTML = text;
     
     resultBlock.classList.remove('hidden');
@@ -615,14 +640,15 @@ function updateRoleScreen() {
     rolePlayerTitle.textContent = `ГРАВЕЦЬ ${currentPlayer}/${playersNumber}`;
     
     let currentRole = playerRoles[currentPlayer - 1];
+    
+    roleName.className = "role-title"; 
+    roleName.style.color = "var(--text-white)"; 
+
     if (currentRole === Roles.SABOTEUR) {
         roleName.textContent = "ТИ - ДИВЕРСАНТ!";
-        roleName.className = "role-title red-text"; 
         roleCodeText.textContent = `КОД: ${gameCode.join('')}`;
     } else {
         roleName.textContent = "ТИ - МИРНИЙ!";
-        roleName.className = "role-title"; 
-        roleName.style.color = "var(--wordle-green)";
         roleCodeText.textContent = "КОД: ХХХ";
     }
 }
@@ -710,7 +736,7 @@ function endHold(e) {
     roleCardInner.classList.remove('is-flipped');
     
     let holdDuration = Date.now() - holdStartTime;
-    if (holdDuration >= 800) {
+    if (holdDuration >= 500) {
         currentPlayer++;
         if (currentPlayer > playersNumber) {
             nextHintNumber = playersNumber; 

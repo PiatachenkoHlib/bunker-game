@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Бункер</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="app">
+        
+        <!-- Кнопка рестарту (спочатку прихована) -->
+        <button id="btn-restart" class="btn-restart hidden">↻</button>
+
+        <!-- Стан 1: Стартовий екран -->
+        <section id="state-1" class="screen">
+            <h1 class="title-main">БУНКЕР</h1>
+            
+            <div class="lock-visual">
+                <div class="lock-digit">0</div>
+                <div class="lock-digit">0</div>
+                <div class="lock-digit">0</div>
+            </div>
+
+            <div class="player-count-selector">
+                <span class="arrow-btn" id="btn-minus">◀</span>
+                <span class="player-count-text">Кількість гравців: <br><span id="player-count">4</span></span>
+                <span class="arrow-btn" id="btn-plus">▶</span>
+            </div>
+
+            <button class="btn btn-green" id="btn-start">ПОЧАТИ ГРУ</button>
+            <button class="btn btn-small" id="btn-rules">правила</button>
+        </section>
+
+        <!-- Стани 2 та 3: Роздача ролей -->
+        <section id="state-role" class="screen hidden">
+            <h2 class="title-secondary" id="role-player-title">ГРАВЕЦЬ 1/4</h2>
+            
+            <div class="card-container" id="role-card">
+                <div class="card-inner">
+                    <div class="card-front column-box">
+                        <p>Натисни та тримай,<br>щоб побачити свою роль!</p>
+                    </div>
+                    <div class="card-back column-box">
+                        <h3 class="role-title" id="role-name">ТИ - ДИВЕРСАНТ!</h3>
+                        <p class="role-code" id="role-code-text">КОД: 308</p>
+                        <div class="progress-bar-container">
+                            <div class="progress-bar" id="hold-progress"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Стани 5-10: Основний ігровий цикл (Раунди) -->
+        <section id="state-round" class="screen hidden">
+            <h2 class="title-secondary" id="round-title">РАУНД 1/4</h2>
+            
+            <!-- Замок для раунду -->
+            <div class="lock-visual interactive" id="round-lock">
+                <div class="lock-digit-container">
+                    <div class="lock-digit" id="digit-1">0</div>
+                </div>
+                <div class="lock-digit-container">
+                    <div class="lock-digit" id="digit-2">0</div>
+                </div>
+                <div class="lock-digit-container">
+                    <div class="lock-digit" id="digit-3">0</div>
+                </div>
+            </div>
+
+            <!-- Динамічний контейнер під замком -->
+            <div id="dynamic-round-area">
+                
+                <!-- Стан 5: Вибір дії -->
+                <div id="round-actions" class="dynamic-block">
+                    <button class="btn btn-wide" id="btn-gen-event">Згенерувати подію</button>
+                    <button class="btn btn-wide" id="btn-choose-event">Обрати подію самостійно</button>
+                    <button class="btn btn-wide" id="btn-view-hints">Дивитись підказки</button>
+                </div>
+
+                <!-- Стан 8: Таймер обговорення (ОНОВЛЕНИЙ) -->
+                <div id="round-timer" class="dynamic-block hidden">
+                    <p class="subtitle">обговорення</p>
+                    <div class="timer-text" id="timer-display">3:59</div>
+                    <!-- Новий контейнер для однакових кнопок -->
+                    <div class="timer-buttons-container">
+                        <button class="btn" id="btn-skip-discuss">Пропустити</button>
+                        <button class="btn" id="btn-timer-hints">Підказки</button>
+                    </div>
+                </div>
+
+<!-- НОВИЙ СТАН: Ручний вибір події -->
+<div id="round-manual-event" class="dynamic-block hidden">
+    <h3 class="subtitle" style="margin-bottom: 15px;">ОБЕРІТЬ ПОДІЮ:</h3>
+    <div class="events-grid">
+        <button class="btn" id="btn-manual-1">Блок</button>
+        <button class="btn" id="btn-manual-2">Поспіх</button>
+        <button class="btn" id="btn-manual-3">Мовчанка</button>
+        <button class="btn" id="btn-manual-4">Розкриття</button>
+        <button class="btn" id="btn-manual-5">Діагностика</button>
+        <button class="btn" id="btn-manual-6">Дешифрування</button>
+    </div>
+    <button class="btn btn-wide" id="btn-back-to-actions">Назад</button>
+</div>
+
+                <!-- Стан 9: Ввід коду -->
+                <div id="round-input" class="dynamic-block hidden">
+                    <button class="btn btn-green btn-wide" id="btn-submit-code">ВВІД</button>
+                    <div class="timer-text red-text" id="input-timer-display">0:10</div>
+                </div>
+
+                <!-- Стан 10: Результат вводу -->
+                <div id="round-result" class="dynamic-block hidden">
+                    <h2 class="alert-text" id="result-status">НЕПРАВИЛЬНИЙ КОД!</h2>
+                    <div class="result-stats" id="result-stats-box">
+                        <p>Вгадано цифр: <span id="stat-total">2</span></p>
+                        <p>З них на своєму місці: <span id="stat-exact">1</span></p>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Універсальне вікно виводу тексту (Оверлей) -->
+        <div id="overlay" class="overlay hidden">
+            <h2 class="title-secondary" id="overlay-title">ЗАГОЛОВОК</h2>
+            <div class="column-box hints-box" id="overlay-column">
+                <div id="overlay-text-content">
+                    <!-- Сюди JS динамічно вставлятиме текст -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Вікно підтвердження рестарту -->
+        <div id="restart-modal" class="overlay hidden">
+            <div class="column-box" style="cursor: default; min-height: auto;">
+                <h2 class="title-secondary">Почати заново?</h2>
+                <p style="margin-bottom: 20px;">Поточний прогрес буде втрачено.</p>
+                <div style="display: flex; gap: 10px; width: 100%;">
+                    <button class="btn" id="btn-cancel-restart" style="flex: 1; margin-bottom: 0;">Ні</button>
+                    <button class="btn btn-green" id="btn-confirm-restart" style="flex: 1; margin-bottom: 0;">Так</button>
+                </div>
+            </div>
+        </div>
+        <script src="scrypt.js"></script>
+    </div>
+</body>
+</html>

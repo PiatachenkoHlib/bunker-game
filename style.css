@@ -1,0 +1,342 @@
+/* Базові змінні та налаштування */
+:root {
+    --bg-dark: #2c2c2c;
+    --col-gray: #4a4a4a;
+    --col-light-gray: #7a7a7a;
+    --text-white: #f5f5f5;
+    --alert-red: #e63946;
+    --wordle-yellow: #e9c46a;
+    --wordle-green: #36c231;
+    --font-main: sans-serif;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-color: var(--bg-dark);
+    color: var(--text-white);
+    font-family: var(--font-main);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    user-select: none; /* Запобігає виділенню тексту під час тривалого натискання */
+}
+
+#app {
+    width: 100%;
+    max-width: 480px; /* Оптимально для мобільних телефонів */
+    height: 100vh;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+}
+
+/* Утиліти */
+.hidden {
+    display: none !important;
+}
+.red-text {
+    color: var(--alert-red) !important;
+}
+
+/* Типографіка */
+.title-main {
+    font-size: 3rem;
+    letter-spacing: 2px;
+    margin-bottom: 30px;
+    margin-top: 20px;
+}
+
+.title-secondary {
+    font-size: 1.8rem;
+    margin-bottom: 20px;
+}
+
+.alert-text {
+    color: var(--alert-red);
+    font-size: 1.8rem;
+    margin-bottom: 10px;
+}
+
+.subtitle {
+    font-size: 1.2rem;
+    color: var(--col-light-gray);
+    margin-bottom: 10px;
+}
+
+/* Кнопки загальні */
+.btn {
+    background-color: var(--col-gray);
+    color: var(--text-white);
+    border: none;
+    padding: 15px 20px;
+    font-size: 1.2rem;
+    border-radius: 0; /* Прибрали заокруглення */
+    cursor: pointer;
+    text-transform: uppercase;
+    font-weight: bold;
+    margin-bottom: 15px;
+    transition: background-color 0.2s;
+}
+
+#btn-start {
+    border-radius: 25px; /* Круглі кути */
+}
+
+#btn-rules {
+    border-radius: 0; /* Гострі кути */
+}
+
+/* ОДНАКОВІ КНОПКИ ПІД ТАЙМЕРОМ */
+.timer-buttons-container {
+    display: flex;
+    gap: 15px;
+    width: 100%;
+}
+
+.timer-buttons-container .btn {
+    flex: 1; /* Робить кнопки однаковими по ширині */
+    margin-bottom: 0;
+    padding: 12px 10px; /* Трохи компактніше для двох кнопок */
+}
+
+/* СІТКА ДЛЯ РУЧНОГО ВИБОРУ ПОДІЙ */
+.events-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    width: 100%;
+    margin-bottom: 15px;
+}
+
+.events-grid .btn {
+    margin-bottom: 0;
+    padding: 15px 5px;
+    font-size: 1rem;
+}
+
+.btn:active {
+    background-color: var(--col-light-gray);
+}
+
+.btn-green {
+    background-color: var(--wordle-green);
+    border: 2px solid var(--bg-dark);
+}
+
+.btn-small {
+    padding: 8px 16px;
+    font-size: 0.9rem;
+    border-radius: 10px;
+    margin-top: 10px;
+}
+
+.btn-wide {
+    width: 100%;
+    display: block;
+}
+
+/* Сіра колонка-контейнер (для подій, підказок, карток) */
+.column-box {
+    background-color: var(--col-gray);
+    border-radius: 15px;
+    padding: 20px;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 250px;
+    margin-bottom: 20px;
+}
+
+.hints-box {
+    justify-content: flex-start;
+    align-items: flex-start;
+    text-align: left;
+    overflow-y: auto;
+    max-height: 60vh;
+}
+
+.hints-box ol {
+    padding-left: 20px;
+    line-height: 1.6;
+}
+
+.hints-box li {
+    margin-bottom: 10px;
+}
+
+/* ЗАМОК */
+.lock-visual {
+    background-color: var(--col-light-gray);
+    border: 4px solid var(--col-gray);
+    border-radius: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 15px 25px;
+    margin: 0 auto 30px auto;
+    width: fit-content;
+    gap: 10px;
+}
+
+.lock-digit-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.lock-digit {
+    background-color: var(--col-gray);
+    color: var(--text-white);
+    font-size: 2.5rem;
+    width: 60px;
+    height: 80px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 10px;
+    border: 2px solid var(--bg-dark);
+}
+
+.scroll-arrow {
+    background: none;
+    border: none;
+    color: var(--text-white);
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 5px;
+}
+
+/* Wordle кольори для скрипта */
+.lock-digit.wordle-green { background-color: var(--wordle-green); }
+.lock-digit.wordle-yellow { background-color: var(--wordle-yellow); }
+.lock-digit.wordle-red { background-color: var(--alert-red); }
+
+/* Вибір гравців */
+.player-count-selector {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.arrow-btn {
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: var(--col-light-gray);
+}
+
+.player-count-text {
+    font-size: 1.2rem;
+    line-height: 1.5;
+}
+
+#player-count {
+    font-size: 2rem;
+    font-weight: bold;
+}
+
+/* 3D Перевертання картки (Стан 2-3) */
+.card-container {
+    perspective: 1000px;
+    width: 100%;
+    flex-grow: 1;
+    display: flex;
+    margin-bottom: 20px;
+}
+
+.card-inner {
+    width: 100%;
+    height: 100%;
+    transition: transform 0.6s;
+    transform-style: preserve-3d;
+    position: relative;
+}
+
+/* Цей клас додаватиме JS під час утримання */
+.card-inner.is-flipped {
+    transform: rotateY(180deg);
+}
+
+.card-front, .card-back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+    margin-bottom: 0;
+}
+
+.card-back {
+    transform: rotateY(180deg);
+}
+
+.role-title {
+    font-size: 2rem;
+    margin-bottom: 20px;
+    color: var(--alert-red);
+}
+
+.role-code {
+    font-size: 2.5rem;
+    letter-spacing: 5px;
+}
+
+/* Таймери */
+.timer-text {
+    font-size: 4rem;
+    font-weight: bold;
+    margin: 20px 0;
+}
+
+/* Стилі для універсального оверлею */
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--bg-dark);
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+}
+
+#overlay-column {
+    cursor: pointer;
+    flex: 1; /* Ця властивість розтягує прямокутник на весь доступний простір */
+    margin: 0;
+}
+
+/* Кнопка рестарту */
+.btn-restart {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 45px;
+    height: 45px;
+    background-color: var(--col-gray);
+    color: var(--text-white);
+    border: none;
+    border-radius: 10px; /* Робимо її квадратною з заокругленням */
+    font-size: 1.8rem;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 50;
+    transition: background-color 0.2s;
+}
+
+.btn-restart:active {
+    background-color: var(--col-light-gray);
+}

@@ -76,7 +76,7 @@
                 <div id="round-actions" class="dynamic-block">
                     <button class="btn btn-wide" id="btn-gen-event">Згенерувати подію</button>
                     <button class="btn btn-wide" id="btn-choose-event">Обрати подію самостійно</button>
-                    <button class="btn btn-wide" id="btn-open-notepad">Блокнот</button>
+                    <button class="btn btn-wide" id="btn-open-matrix">Блокнот</button>
                 </div>
 
                 <!-- Стан 8: Таймер обговорення (ОНОВЛЕНИЙ) -->
@@ -86,7 +86,7 @@
                     <!-- Новий контейнер для однакових кнопок -->
                     <div class="timer-buttons-container">
                         <button class="btn" id="btn-skip-discuss">Пропустити</button>
-                        <button class="btn" id="btn-timer-notepad">Блокнот</button>
+                        <button class="btn" id="btn-timer-matrix">Блокнот</button>
                     </div>
                 </div>
 
@@ -133,17 +133,17 @@
         </div>
 
         <!-- Вікно Блокнота -->
-        <div id="notepad-modal" class="overlay hidden">
+        <div id="matrix-modal" class="overlay hidden">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                 <h2 class="title-secondary" style="margin: 0;">БЛОКНОТ</h2>
-                <button id="btn-close-notepad" class="btn btn-small" style="margin: 0; background-color: var(--alert-red); border-radius: 10px;">X</button>
+                <button id="btn-close-matrix" class="btn btn-small" style="margin: 0; background-color: var(--alert-red); border-radius: 10px;">X</button>
             </div>
             
             <div class="column-box" style="flex: 1; padding: 15px; justify-content: flex-start;">
-                <div class="notepad-grid" id="notepad-grid">
-                    <div class="notepad-col-header">1</div>
-                    <div class="notepad-col-header">2</div>
-                    <div class="notepad-col-header">3</div>
+                <div class="matrix-grid" id="matrix-grid">
+                    <div class="matrix-col-header">1</div>
+                    <div class="matrix-col-header">2</div>
+                    <div class="matrix-col-header">3</div>
                 </div>
             </div>
         </div>

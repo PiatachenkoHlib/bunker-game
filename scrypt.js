@@ -740,14 +740,14 @@ function endHold(e) {
 }
 
 // ЛОГІКА МАТРИЦІ
-const notepadModal = document.getElementById('notepad-modal');
-const notepadGrid = document.getElementById('notepad-grid');
+const matrixModal = document.getElementById('matrix-modal');
+const matrixGrid = document.getElementById('matrix-grid');
 
 // Генерація цифр для Матриці (від 0 до 9, по 3 стовпці)
 for (let i = 0; i <= 9; i++) {
     for (let col = 1; col <= 3; col++) {
         let cell = document.createElement('div');
-        cell.className = 'notepad-cell';
+        cell.className = 'matrix-cell';
         cell.textContent = i;
         cell.dataset.state = 0; // 0 = базовий, 1 = закреслено, 2 = обведено
 
@@ -761,13 +761,13 @@ for (let i = 0; i <= 9; i++) {
             else if (state === 2) this.classList.add('circled');
         });
         
-        notepadGrid.appendChild(cell);
+        matrixGrid.appendChild(cell);
     }
 }
 
 // Закриття Матриці
-document.getElementById('btn-close-notepad').addEventListener('click', () => {
-    notepadModal.classList.add('hidden');
+document.getElementById('btn-close-matrix').addEventListener('click', () => {
+    matrixModal.classList.add('hidden');
 });
 
 // --- ОБРОБНИКИ ПОДІЙ (EVENT LISTENERS) ---
@@ -828,13 +828,13 @@ document.getElementById('btn-gen-event').addEventListener('click', () => {
 });
 
 // Кнопка блокноту у меню дій
-document.getElementById('btn-open-notepad').addEventListener('click', () => {
-    notepadModal.classList.remove('hidden');
+document.getElementById('btn-open-matrix').addEventListener('click', () => {
+    matrixModal.classList.remove('hidden');
 });
 
 // Кнопка блокноту під час обговорення
-document.getElementById('btn-timer-notepad').addEventListener('click', () => {
-    notepadModal.classList.remove('hidden');
+document.getElementById('btn-timer-matrix').addEventListener('click', () => {
+    matrixModal.classList.remove('hidden');
 });
 
 // Кнопка "правила"

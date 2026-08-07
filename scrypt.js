@@ -298,25 +298,24 @@ function mastermindCheck(inputNum, targetNum) {
     }
 
     if (fullGuessedDigs === targetNum.length) return true;
-    else return `Вгадано цифр: ${guessedDigs}<br>З них на своєму місці: ${fullGuessedDigs}`;
-}
+    else return `Знайдено цифр: <b>${guessedDigs}</b><br>З них на своєму місці: <b>${fullGuessedDigs}</b>`;}
 
 function wordleCheck(inputNum, targetNum) {
     let result = '';
     let fullGuessedDigs = 0;
 
-    for (let i = 0; i < inputNum.length; i++) {
-        if (inputNum[i] === targetNum[i]) {
-            result += `${inputNum[i]} — вгадано, і на своєму місці\n`;
-            fullGuessedDigs++;
-        } 
-        else if (targetNum.includes(inputNum[i])) {
-            result += `${inputNum[i]} — вгадано, але не на своєму місці\n`;
-        } 
-        else {
-            result += `${inputNum[i]} — не вгадано\n`;
-        }
+  for (let i = 0; i < inputNum.length; i++) { /*[cite: 1] */
+    if (inputNum[i] === targetNum[i]) { /*[cite: 1] */
+        result += `<b>${inputNum[i]}</b> — є, і на своєму місці<br>`;
+        fullGuessedDigs++; /*[cite: 1] */
+    } 
+    else if (targetNum.includes(inputNum[i])) { /*[cite: 1] */
+        result += `<b>${inputNum[i]}</b> — є, але не на своєму місці<br>`;
+    } 
+    else {
+        result += `<b>${inputNum[i]}</b> — немає<br>`;
     }
+}
 
     if (fullGuessedDigs === targetNum.length) return true;
     else return result;
@@ -497,9 +496,7 @@ function toInputCode() {
     }
 
     startTimer(10, 'input-timer-display', () => {
-        // Цей код виконається, якщо 10 секунд минуть, а кнопку ВВІД не натиснуть
-        outputData("ЧАС ВИЙШОВ!", "Ви не встигли натиснути ВВІД. Спроба згоріла.");
-        setTimeout(toNewRound, 5000);
+        document.getElementById('btn-submit-code').click();
     });
 }
 

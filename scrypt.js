@@ -304,12 +304,12 @@ function wordleCheck(inputNum, targetNum) {
     let result = '';
     let fullGuessedDigs = 0;
 
-  for (let i = 0; i < inputNum.length; i++) { /*[cite: 1] */
-    if (inputNum[i] === targetNum[i]) { /*[cite: 1] */
+  for (let i = 0; i < inputNum.length; i++) { 
+    if (inputNum[i] === targetNum[i]) { 
         result += `<b>${inputNum[i]}</b> — є, і на своєму місці<br>`;
-        fullGuessedDigs++; /*[cite: 1] */
+        fullGuessedDigs++; 
     } 
-    else if (targetNum.includes(inputNum[i])) { /*[cite: 1] */
+    else if (targetNum.includes(inputNum[i])) { 
         result += `<b>${inputNum[i]}</b> — є, але не на своєму місці<br>`;
     } 
     else {
@@ -450,11 +450,6 @@ function toNewRound() {
     isWordleCheck = false;
     isBlocked = false;
     currentRound++;
-    
-    // Скидаємо кольори замка, якщо був Wordle-режим
-    lockDigitsUI.forEach(el => {
-        el.style.backgroundColor = "var(--col-gray)";
-    });
 
     document.getElementById('round-title').textContent = `РАУНД ${currentRound}/${roundsNum}`;
     
@@ -744,6 +739,37 @@ function endHold(e) {
     }
 }
 
+// ЛОГІКА МАТРИЦІ
+const notepadModal = document.getElementById('notepad-modal');
+const notepadGrid = document.getElementById('notepad-grid');
+
+// Генерація цифр для Матриці (від 0 до 9, по 3 стовпці)
+for (let i = 0; i <= 9; i++) {
+    for (let col = 1; col <= 3; col++) {
+        let cell = document.createElement('div');
+        cell.className = 'notepad-cell';
+        cell.textContent = i;
+        cell.dataset.state = 0; // 0 = базовий, 1 = закреслено, 2 = обведено
+
+        cell.addEventListener('click', function() {
+            let state = parseInt(this.dataset.state);
+            state = (state + 1) % 3; // Перемикання: 0 -> 1 -> 2 -> 0
+            this.dataset.state = state;
+
+            this.classList.remove('crossed', 'circled');
+            if (state === 1) this.classList.add('crossed');
+            else if (state === 2) this.classList.add('circled');
+        });
+        
+        notepadGrid.appendChild(cell);
+    }
+}
+
+// Закриття Матриці
+document.getElementById('btn-close-notepad').addEventListener('click', () => {
+    notepadModal.classList.add('hidden');
+});
+
 // --- ОБРОБНИКИ ПОДІЙ (EVENT LISTENERS) ---
 
 // Логіка кнопки Рестарту
@@ -781,7 +807,6 @@ btnPlus.addEventListener('click', () => {
     }
 });
 
-
 // Кнопка "ПОЧАТИ ГРУ"
 btnStart.addEventListener('click', () => {
     playersNumber = selectedPlayers; // Передаємо вибрану кількість у глобальну змінну
@@ -802,14 +827,14 @@ document.getElementById('btn-gen-event').addEventListener('click', () => {
     generateEvent(); // Ця функція викличе рандом і виведе подію на екран
 });
 
-// Кнопка "Дивитись підказки" (у меню дій)
-document.getElementById('btn-view-hints').addEventListener('click', () => {
-    outputText('ПІДКАЗКИ', giveHints(nextHintNumber));
+// Кнопка блокноту у меню дій
+document.getElementById('btn-open-notepad').addEventListener('click', () => {
+    notepadModal.classList.remove('hidden');
 });
 
-// Кнопка "Дивитись підказки" (під час таймера обговорення)
-document.getElementById('btn-timer-hints').addEventListener('click', () => {
-    outputText('ПІДКАЗКИ', giveHints(nextHintNumber));
+// Кнопка блокноту під час обговорення
+document.getElementById('btn-timer-notepad').addEventListener('click', () => {
+    notepadModal.classList.remove('hidden');
 });
 
 // Кнопка "правила"

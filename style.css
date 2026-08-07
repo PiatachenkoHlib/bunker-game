@@ -224,6 +224,58 @@ body {
     padding: 5px;
 }
 
+/* --- СТИЛІ МАТРИЦІ --- */
+.notepad-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    width: 100%;
+    gap: 2px;
+}
+
+.notepad-col-header {
+    font-size: 1.2rem; 
+    font-weight: bold;
+    text-align: center;
+    border-bottom: 2px solid var(--text-white);
+    padding-bottom: 4px;
+    margin-bottom: 6px;
+}
+
+.notepad-cell {
+    font-size: 1.2rem;
+    font-family: 'Orbitron', sans-serif;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 32px;
+    height: 32px;
+    margin: 0 auto;
+    cursor: pointer;
+    position: relative;
+    color: var(--text-white);
+}
+
+/* Стан 1: Закреслення */
+.notepad-cell.crossed {
+    color: var(--col-light-gray);
+}
+.notepad-cell.crossed::after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 3px;
+    background-color: var(--alert-red);
+    transform: rotate(-45deg);
+    border-radius: 2px;
+}
+
+/* Стан 2: Обведення */
+.notepad-cell.circled {
+    border: 2px solid var(--alert-red);
+    border-radius: 50%;
+}
+
 /* Wordle кольори для скрипта */
 .lock-digit.wordle-green { background-color: var(--wordle-green); }
 .lock-digit.wordle-yellow { background-color: var(--wordle-yellow); }

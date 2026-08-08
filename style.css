@@ -41,6 +41,13 @@ body {
     text-align: center;
 }
 
+.screen {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    width: 100%;
+}
+
 /* Утиліти */
 .hidden {
     display: none !important;
@@ -83,9 +90,9 @@ body {
     background-color: var(--col-gray);
     color: var(--text-white);
     border: none;
-    padding: 15px 20px;
-    font-size: 1.2rem;
-    border-radius: 0; /* Прибрали заокруглення */
+    padding: 18px 20px;
+    font-size: 1.3rem;
+    border-radius: 0;
     cursor: pointer;
     text-transform: uppercase;
     font-weight: bold;
@@ -104,8 +111,10 @@ body {
 /* ОДНАКОВІ КНОПКИ ПІД ТАЙМЕРОМ */
 .timer-buttons-container {
     display: flex;
-    gap: 15px;
+    flex-direction: column;
+    gap: 10px;
     width: 100%;
+    margin-bottom: 15px;
 }
 
 .timer-buttons-container .btn {
@@ -169,7 +178,6 @@ body {
     align-items: flex-start;
     text-align: left;
     overflow-y: auto;
-    max-height: 60vh;
 }
 
 .hints-box ol {
@@ -227,13 +235,14 @@ body {
 /* --- СТИЛІ МАТРИЦІ --- */
 .matrix-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr); /* 3 рівні колонки */
+    grid-template-columns: repeat(3, 1fr);
     width: 100%;
-    gap: 5px;
+    row-gap: 20px; /* Збільшена відстань по вертикалі між цифрами */
+    column-gap: 0;
 }
 
 .matrix-col-header {
-    font-size: 1.5rem;
+    font-size: 3rem; /* Збільшено в 2 рази */
     font-weight: bold;
     text-align: center;
     border-bottom: 2px solid var(--text-white);
@@ -241,16 +250,23 @@ body {
     margin-bottom: 10px;
 }
 
+/* вертикальні лінії-розділювачі до 1 і 2 колонки */
+.matrix-col-header:nth-child(1),
+.matrix-col-header:nth-child(2),
+.matrix-cell:nth-child(3n+1),
+.matrix-cell:nth-child(3n+2) {
+    border-right: 2px solid var(--col-light-gray);
+}
+
 .matrix-cell {
     font-size: 1.5rem;
-    font-family: 'Orbitron', sans-serif; /* Використовуємо бункерний шрифт */
+    font-family: 'Orbitron', sans-serif;
     text-align: center;
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 40px;
+    width: 100%;
     height: 40px;
-    margin: 0 auto;
     cursor: pointer;
     position: relative;
     color: var(--text-white);
@@ -263,7 +279,7 @@ body {
 .matrix-cell.crossed::after {
     content: '';
     position: absolute;
-    width: 100%;
+    width: 60%; 
     height: 3px;
     background-color: var(--alert-red);
     transform: rotate(-45deg);
@@ -274,6 +290,8 @@ body {
 .matrix-cell.circled {
     border: 3px solid var(--alert-red);
     border-radius: 50%;
+    width: 40px;
+    margin: 0 auto;
 }
 
 /* Wordle кольори для скрипта */
@@ -400,4 +418,11 @@ body {
 
 .btn-restart:active {
     background-color: var(--col-light-gray);
+}
+
+/* Обмежуємо ширину основних кнопок під розмір замка та центруємо їх */
+#btn-start, #btn-rules, .btn-wide {
+    width: 248px !important;
+    margin-left: auto;
+    margin-right: auto;
 }

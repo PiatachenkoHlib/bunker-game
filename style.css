@@ -27,14 +27,14 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    min-height: 100vh;
+    min-height: 100dvh;
     user-select: none; /* Запобігає виділенню тексту під час тривалого натискання */
 }
 
 #app {
     width: 100%;
     max-width: 480px; /* Оптимально для мобільних телефонів */
-    height: 100vh;
+    height: 100dvh;
     padding: 20px;
     display: flex;
     flex-direction: column;
@@ -421,8 +421,16 @@ body {
 }
 
 /* Обмежуємо ширину основних кнопок під розмір замка та центруємо їх */
-#btn-start, #btn-rules, .btn-wide {
-    width: 248px !important;
+#btn-start, #btn-rules, .btn-wide, .timer-buttons-container .btn {
+    width: 200px !important;
     margin-left: auto;
     margin-right: auto;
+}
+
+/* Неактивний стан для кнопок */
+.btn.disactive {
+    opacity: 0.4;
+    pointer-events: none;
+    cursor: not-allowed;
+    box-shadow: none;
 }

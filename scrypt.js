@@ -17,12 +17,13 @@ let hintsList = [];
 let nextHintNumber = 0;
 
 let discusTime = 0;
-let currentDiscusTime = 0;
+let currentTime = 0;
 
 let isWordleCheck = false;
 let isBlocked = false;
 
 let activeTimer = null;
+let autoActionTimeout = null;
 
 let hasBlockOccurred = false;
 let hasDecryptionOccurred = false;
@@ -340,40 +341,45 @@ function inputCode(code) {
 // Події кубика
 
 function lockBlock(){
+    if (autoActionTimeout) clearTimeout(autoActionTimeout);
     isBlocked = true;
-    outputText(titleEvent1, event1, toDiscuss)
+    outputText(titleEvent1, event1, toDiscuss, 10);
     hasBlockOccurred = true;
 }
 
 function haste(){
-    currentDiscusTime = Math.floor(currentDiscusTime - (discusTime / 2))
-    outputText(titleEvent2, event2, toDiscuss)
+    if (autoActionTimeout) clearTimeout(autoActionTimeout);
+    currentDiscusTime -= Math.floor(discusTime / 2);
+    if (currentDiscusTime <= 0) currentDiscusTime = 3;
+    outputText(titleEvent2, event2, toDiscuss, 10);
 }
 
 function silently(){
-    outputText(titleEvent3, event3, toDiscuss)
+    if (autoActionTimeout) clearTimeout(autoActionTimeout);
+    outputText(titleEvent3, event3, toDiscuss, 10);
 }
 
 function disclos(){
+    if (autoActionTimeout) clearTimeout(autoActionTimeout);
     if(playersNumber === 2) diagnostic();
     else {
-        let str = ""
-        for(let i = 0; i < roleDeck.length; i++){
-            str += roleDeck[i] + "<br>";
-        }
-        outputText(titleEvent4, event4 + "<br> <br> НЕРОЗДАНІ РОЛІ <br>" + str, toDiscuss)
+        let str = "";
+        for(let i = 0; i < roleDeck.length; i++) str += roleDeck[i] + "<br>";
+        outputText(titleEvent4, event4 + "<br> <br> НЕРОЗДАНІ РОЛІ <br>" + str, toDiscuss, 10);
     }
 }
 
 function diagnostic(){
-    outputText(titleEvent5, event5 + "<br> <br> ПІДКАЗКА <br>" + hintsList[nextHintNumber], toDiscuss)
+    if (autoActionTimeout) clearTimeout(autoActionTimeout);
+    outputText(titleEvent5, event5 + "<br> <br> ПІДКАЗКА <br>" + hintsList[nextHintNumber], toDiscuss, 10);
     nextHintNumber++;
 }
 
 function descript(){
+    if (autoActionTimeout) clearTimeout(autoActionTimeout);
     isWordleCheck = true;
-    outputText(titleEvent6, event6, toDiscuss)
-    hasDecryptionOccurred = true
+    outputText(titleEvent6, event6, toDiscuss, 10);
+    hasDecryptionOccurred = true;
 }
 
 // Функція рандомної генерації
@@ -451,7 +457,7 @@ function toNewRound() {
     isWordleCheck = false;
     isBlocked = false;
     currentRound++;
-    currentDiscusTime = discusTime;
+    currentTime = discusTime;
 
     document.getElementById('round-title').textContent = `РАУНД ${currentRound}/${roundsNum}`;
     
@@ -463,6 +469,15 @@ function toNewRound() {
     
     // Переконуємось, що показуємо меню дій
     document.getElementById('round-actions').classList.remove('hidden');
+
+    discusTime = playersNumber * 60;
+    startTimer(discusTime, 'timer-display', toInputCode);
+    
+    // Автогенерація події
+    if (autoActionTimeout) clearTimeout(autoActionTimeout);
+    autoActionTimeout = setTimeout(() => {
+        generateEvent();
+    }, (discusTime / 2) * 1000);
 }
 
 function toDiscuss() {
@@ -477,7 +492,7 @@ function toDiscuss() {
     btnSkip.classList.remove('hidden');
     btnSkip.textContent = "Перейти до вводу";
         
-    startTimer(currentDiscusTime, 'timer-display', toInputCode);
+    startTimer(currentTime, 'timer-display', toInputCode);
 }
 
 function toInputCode() {
@@ -508,6 +523,7 @@ function toRestart() {
     currentPlayer = 1;
     currentRound = 0;
     nextHintNumber = 0;
+    currentTime = 0;
     isWordleCheck = false;
     isBlocked = false;
     hasBlockOccurred = false;
@@ -535,39 +551,42 @@ function toRestart() {
 }
 
 // Виведення тексту
-function outputText(title, text, action = null) {
+function outputText(title, text, action = null, autoCloseTime = 0) {
     const overlay = document.getElementById('overlay');
     const titleEl = document.getElementById('overlay-title');
     const contentEl = document.getElementById('overlay-text-content');
     const columnEl = document.getElementById('overlay-column');
 
-    // Наповнюємо даними
+    // Очищаємо попередній авто-таймаут, якщо він був
+    if (autoActionTimeout) {
+        clearTimeout(autoActionTimeout);
+        autoActionTimeout = null;
+    }
+
     titleEl.textContent = title;
-    
-    // Перевіряємо, чи це список підказок (чи містить теги <li>)
-    // Якщо так - огортаємо в <ol>, якщо ні - просто виводимо текст
     if (text.includes('<li>')) {
         contentEl.innerHTML = `<ol>${text}</ol>`;
     } else {
-        // Якщо це звичайний текст, замінюємо \n на HTML-перенесення
         contentEl.innerHTML = text.replace(/\n/g, '<br>');
     }
 
-    // Показуємо оверлей
     overlay.classList.remove('hidden');
 
-    // Очищаємо попередні обробники кліків, щоб вони не накопичувались
-    columnEl.onclick = null; 
+    // Якщо задано час — запускаємо автозакриття (Пункт з TODO)
+    if (autoCloseTime > 0) {
+        autoActionTimeout = setTimeout(() => {
+            overlay.classList.add('hidden');
+            if (action) action();
+        }, autoCloseTime * 1000);
+    }
 
-    // Вішаємо нову подію на клік
     columnEl.onclick = function() {
-        // Ховаємо оверлей
-        overlay.classList.add('hidden');
-        
-        // Якщо передано функцію action, виконуємо її!
-        if (action) {
-            action();
+        if (autoActionTimeout) {
+            clearTimeout(autoActionTimeout);
+            autoActionTimeout = null;
         }
+        overlay.classList.add('hidden');
+        if (action) action();
     };
 }
 
@@ -591,34 +610,28 @@ function outputData(title, text, titleClass = "alert-text") {
 
 // duration - час у секундах, elementId - куди виводити, onFinish - що робити в кінці
 function startTimer(duration, elementId, onFinish) {
-    // Якщо якийсь таймер вже йде, обов'язково зупиняємо його
     if (activeTimer) clearInterval(activeTimer);
 
-    let timer = duration;
+    // Використовуємо логіку глобального лічильника
+    currentTime = duration; 
     const display = document.getElementById(elementId);
 
-    // Функція для оновлення тексту на екрані
     function updateDisplay() {
-        let minutes = Math.floor(timer / 60);
-        let seconds = timer % 60;
-        
-        // Додаємо нуль спереду, якщо секунд менше 10 (напр. 3:05)
+        let minutes = Math.floor(currentTime / 60);
+        let seconds = currentTime % 60;
         seconds = seconds < 10 ? "0" + seconds : seconds;
         display.textContent = minutes + ":" + seconds;
     }
 
-    // Виводимо початковий час одразу
     updateDisplay();
 
-    // Запускаємо інтервал
     activeTimer = setInterval(function () {
-        timer--;
+        currentTime--; 
         updateDisplay();
 
-        // Коли час вийшов
-        if (timer <= 0) {
-            clearInterval(activeTimer); // Зупиняємо відлік
-            if (onFinish) onFinish(); // Запускаємо подію завершення (наприклад, штраф)
+        if (currentTime <= 0) {
+            clearInterval(activeTimer);
+            if (onFinish) onFinish();
         }
     }, 1000);
 }
@@ -728,11 +741,17 @@ function endHold(e) {
     roleCardInner.classList.remove('is-flipped');
     
     let holdDuration = Date.now() - holdStartTime;
+
     if (holdDuration >= 500) {
         currentPlayer++;
         if (currentPlayer > playersNumber) {
             nextHintNumber = playersNumber; 
-            outputText("ПОЧАТКОВІ ПІДКАЗКИ", giveHints(nextHintNumber), toBrief);
+            
+            let briefTime = playersNumber * 2 * 60;
+            startTimer(briefTime, 'timer-display', toNewRound);
+            
+            let waitTime = (5 * nextHintNumber) + 5;
+            outputText("ПОЧАТКОВІ ПІДКАЗКИ", giveHints(nextHintNumber), toBrief, waitTime);
         } else {
             setTimeout(updateRoleScreen, 300);
         }
@@ -918,6 +937,16 @@ document.getElementById('btn-submit-code').addEventListener('click', () => {
 document.getElementById('btn-choose-event').addEventListener('click', () => {
     document.getElementById('round-actions').classList.add('hidden');
     document.getElementById('round-manual-event').classList.remove('hidden');
+
+    // Робимо кнопку "Розкриття" неактивною при грі вдвох
+    const btnReveal = document.getElementById('btn-manual-4');
+    if (playersNumber === 2) {
+        btnReveal.classList.add('disactive');
+        btnReveal.disabled = true; // Блокуємо на рівні HTML
+    } else {
+        btnReveal.classList.remove('disactive');
+        btnReveal.disabled = false;
+    }
 });
 
 // Кнопка "Назад"

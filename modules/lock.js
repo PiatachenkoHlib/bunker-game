@@ -27,7 +27,6 @@ export function generateCode() {
 export function mastermindCheck(inputNum, targetNum) {
     let guessedDigs = 0;
     let fullGuessedDigs = 0;
-
     let uniqueInput = Array.from(new Set(inputNum));
 
     for (let i = 0; i < uniqueInput.length; i++) {
@@ -35,19 +34,34 @@ export function mastermindCheck(inputNum, targetNum) {
             guessedDigs++;
         }
     }
-
     for (let i = 0; i < inputNum.length; i++) {
         if (inputNum[i] === targetNum[i]) {
             fullGuessedDigs++;
         }
     }
 
-    if (fullGuessedDigs === targetNum.length) return true;
-    else return `Знайдено цифр: <b>${guessedDigs}</b><br>З них на своєму місці: <b>${fullGuessedDigs}</b>`;}
+    // Запис історії для звичайного вводу
+    let historyEntry = `<span style="font-weight: bold; color: var(--text-white);">${inputNum.join('')}</span> <span style="color: var(--col-light-gray); font-size: 1.2rem; letter-spacing: 2px;">➔ ${guessedDigs} | ${fullGuessedDigs}</span>`;
+    
+    GameState.lockHistory.push(historyEntry);
 
+    // Очищаємо попередні класи перед фарбуванням
+    lockDigitsUI.forEach(el => el.classList.remove('wordle-green', 'wordle-yellow', 'wordle-red'));
+
+    // ФАРБУВАННЯ ЗАМКА
+    if (fullGuessedDigs === targetNum.length) {
+        lockDigitsUI.forEach(el => el.classList.add('wordle-green'));
+        return true;
+    } else {
+        lockDigitsUI.forEach(el => el.classList.add('wordle-red'));
+        return `Знайдено цифр: <b>${guessedDigs}</b><br>З них на своєму місці: <b>${fullGuessedDigs}</b>`;
+    }
+}
 export function wordleCheck(inputNum, targetNum) {
     let result = '';
     let fullGuessedDigs = 0;
+    let historyEntry = "";
+    GameState.lockHistory.push(historyEntry.trim());
 
   for (let i = 0; i < inputNum.length; i++) { 
     if (inputNum[i] === targetNum[i]) { 

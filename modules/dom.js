@@ -1,6 +1,6 @@
 import { GameState } from './state.js';
 import { startGame } from '../scrypt.js';
-import { generateEvent, lockBlock, haste, silently, disclos, diagnostic, descript } from './events.js';
+import { generateEvent, GameEvents } from './events.js';
 import { toRestart, toNewRound, toInputCode } from './translations.js';
 import { inputCode } from './lock.js';
 import { outputText, rules } from './text.js';
@@ -177,12 +177,16 @@ export function setupListeners() {
         document.getElementById('round-actions').classList.remove('hidden');
     });
 
-    // Прив'язка 6 кнопок до конкретних функцій подій
-    document.getElementById('btn-manual-1').addEventListener('click', lockBlock);
-    document.getElementById('btn-manual-2').addEventListener('click', haste);
-    document.getElementById('btn-manual-3').addEventListener('click', silently);
-    document.getElementById('btn-manual-4').addEventListener('click', disclos);
-    document.getElementById('btn-manual-5').addEventListener('click', diagnostic);
-    document.getElementById('btn-manual-6').addEventListener('click', descript);
+    // Прив'язка кнопок до конкретних функцій подій
+    document.getElementById('btn-manual-1').addEventListener('click', () => GameEvents.block.execute());
+    document.getElementById('btn-manual-2').addEventListener('click', () => GameEvents.haste.execute());
+    document.getElementById('btn-manual-3').addEventListener('click', () => GameEvents.silently.execute());
+    document.getElementById('btn-manual-4').addEventListener('click', () => GameEvents.disclos.execute());
+    document.getElementById('btn-manual-5').addEventListener('click', () => GameEvents.diagnostic.execute());
+    document.getElementById('btn-manual-6').addEventListener('click', () => GameEvents.descript.execute());
+    document.getElementById('btn-manual-7').addEventListener('click', () => GameEvents.isolation.execute());
+    document.getElementById('btn-manual-8').addEventListener('click', () => GameEvents.timerGlitch.execute());
+    document.getElementById('btn-manual-9').addEventListener('click', () => GameEvents.recall.execute());
+    document.getElementById('btn-manual-10').addEventListener('click', () => GameEvents.liveNotepad.execute());
     //---------------------------
 }

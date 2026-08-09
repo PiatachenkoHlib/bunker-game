@@ -60,6 +60,10 @@ body {
     color: var(--wordle-green) !important;
 }
 
+.yellow-text {
+    color: var(--wordle-yellow) !important;
+}
+
 /* Типографіка */
 .title-main {
     font-size: 3rem;

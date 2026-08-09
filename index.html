@@ -100,6 +100,10 @@
         <button class="btn" id="btn-manual-4">Розкриття</button>
         <button class="btn" id="btn-manual-5">Діагностика</button>
         <button class="btn" id="btn-manual-6">Дешифрування</button>
+        <button class="btn" id="btn-manual-7">Ізоляція</button>
+        <button class="btn" id="btn-manual-8">Збій таймера</button>
+        <button class="btn" id="btn-manual-9">Згадати все</button>
+        <button class="btn" id="btn-manual-10">Живий блокнот</button>
     </div>
     <button class="btn btn-wide" id="btn-back-to-actions">Назад</button>
 </div>
@@ -144,6 +148,16 @@
                     <div class="matrix-col-header">1</div>
                     <div class="matrix-col-header">2</div>
                     <div class="matrix-col-header">3</div>
+                </div>
+
+                <!-- Контейнер для "Живого блокнота" -->
+                <div id="notepad-check-container" class="hidden" style="width: 100%; margin-top: 20px; display: flex; flex-direction: column; align-items: center;">
+                    <button id="btn-check-notepad" class="btn btn-green btn-wide" style="margin-bottom: 0;">ПЕРЕВІРКА</button>
+                    <div id="matrix-check-results" class="hidden" style="display: flex; justify-content: space-around; width: 100%; font-size: 2.5rem; margin-top: 15px;">
+                        <div id="check-res-1"></div>
+                        <div id="check-res-2"></div>
+                        <div id="check-res-3"></div>
+                    </div>
                 </div>
             </div>
         </div>

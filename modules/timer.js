@@ -9,11 +9,25 @@ export function startTimer(duration, elementId, onFinish) {
     const display = document.getElementById(elementId);
 
     function updateDisplay() {
+    if (GameState.timerGlitch) {
+        display.textContent = "[ЗБІЙ]";
+        display.classList.add("red-text");
+    } else {
+        display.classList.remove("red-text");
+        
         let minutes = Math.floor(GameState.currentTime / 60);
         let seconds = GameState.currentTime % 60;
-        seconds = seconds < 10 ? "0" + seconds : seconds;
-        display.textContent = minutes + ":" + seconds;
+        
+        let secondsStr = "";
+        if (seconds < 10) {
+            secondsStr = "0" + seconds;
+        } else {
+            secondsStr = seconds;
+        }
+        
+        display.textContent = minutes + ":" + secondsStr;
     }
+}
 
     updateDisplay();
 

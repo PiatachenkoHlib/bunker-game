@@ -5,13 +5,10 @@ import { GameState } from './modules/state.js';
 import { generateHints } from './modules/hints.js';
 import { initRoles, assignAllRoles, updateRoleScreen } from './modules/roles.js';
 
-
 // --- Ініціалізація гри ---
 initLock();
 initMatrix();
 setupListeners();
-
-
 
 // ПОЧАТОК ГРИ
 export function startGame() {
@@ -28,23 +25,3 @@ export function startGame() {
     GameState.currentPlayer = 1;
     updateRoleScreen(); // Заповнюємо картку для першого гравця
 }
-
-
-
-
-
-
-
-
-// Заповнення тексту картки для поточного гравця
-
-
-
-
-
-
-// ЛОГІКА МАТРИЦІ
-
-
-
-

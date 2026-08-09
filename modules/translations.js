@@ -29,6 +29,13 @@ export function toNewRound() {
     GameState.isBlocked = false;
     GameState.currentRound++;
     GameState.currentTime = GameState.discusTime;
+    GameState.timerGlitch = false;
+    document.getElementById('notepad-check-container')?.classList.add('hidden');
+    const btn1 = document.getElementById('btn-open-matrix');
+    const btn2 = document.getElementById('btn-timer-matrix');
+    if (btn1) { btn1.disabled = false; btn1.classList.remove('disactive'); }
+    if (btn2) { btn2.disabled = false; btn2.classList.remove('disactive'); }
+
 
     document.getElementById('round-title').textContent = `РАУНД ${GameState.currentRound}/${GameState.roundsNum}`;
     
@@ -101,6 +108,9 @@ export function toRestart() {
     GameState.hasDecryptionOccurred = false;
     GameState.roleDeck = [];
     GameState.hintsList = [];
+    GameState.lockHistory = [];
+    GameState.timerGlitch = false;
+    document.getElementById('notepad-check-container')?.classList.add('hidden');
     
     if (GameState.activeTimer) clearInterval(GameState.activeTimer); // Зупиняємо таймер
 

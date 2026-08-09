@@ -41,40 +41,50 @@ export function mastermindCheck(inputNum, targetNum) {
     }
 
     // Запис історії для звичайного вводу
-    let historyEntry = `<span style="font-weight: bold; color: var(--text-white);">${inputNum.join('')}</span> <span style="color: var(--col-light-gray); font-size: 1.2rem; letter-spacing: 2px;">➔ ${guessedDigs} | ${fullGuessedDigs}</span>`;
-    
+    let historyEntry = `${inputNum.join('')}: ${guessedDigs}|${fullGuessedDigs}`;    
     GameState.lockHistory.push(historyEntry);
 
-    // Очищаємо попередні класи перед фарбуванням
-    lockDigitsUI.forEach(el => el.classList.remove('wordle-green', 'wordle-yellow', 'wordle-red'));
+    // Очищаємо класи перед фарбуванням
+    lockDigitsUI.forEach(el => el.classList.remove('green-text', 'yellow-text', 'red-text'));
 
-    // ФАРБУВАННЯ ЗАМКА
+    // Фарбування замка
+    
     if (fullGuessedDigs === targetNum.length) {
-        lockDigitsUI.forEach(el => el.classList.add('wordle-green'));
+        lockDigitsUI.forEach(el => el.classList.add('green-text'));
         return true;
     } else {
-        lockDigitsUI.forEach(el => el.classList.add('wordle-red'));
+        lockDigitsUI.forEach(el => el.classList.add('red-text'));
         return `Знайдено цифр: <b>${guessedDigs}</b><br>З них на своєму місці: <b>${fullGuessedDigs}</b>`;
     }
 }
+
 export function wordleCheck(inputNum, targetNum) {
     let result = '';
     let fullGuessedDigs = 0;
     let historyEntry = "";
-    GameState.lockHistory.push(historyEntry.trim());
 
-  for (let i = 0; i < inputNum.length; i++) { 
-    if (inputNum[i] === targetNum[i]) { 
-        result += `<b>${inputNum[i]}</b> — є, і на своєму місці<br>`;
-        fullGuessedDigs++; 
-    } 
-    else if (targetNum.includes(inputNum[i])) { 
-        result += `<b>${inputNum[i]}</b> — є, але не на своєму місці<br>`;
-    } 
-    else {
-        result += `<b>${inputNum[i]}</b> — немає<br>`;
+    for (let i = 0; i < inputNum.length; i++) { 
+        lockDigitsUI[i].classList.remove('green-text', 'yellow-text', 'red-text');
+
+        if (inputNum[i] === targetNum[i]) { 
+            result += `<b>${inputNum[i]}</b> — є, і на своєму місці<br>`;
+            historyEntry += `<span class="green-text">${inputNum[i]}</span> `; 
+            lockDigitsUI[i].classList.add('green-text');
+            fullGuessedDigs++; 
+        } 
+        else if (targetNum.includes(inputNum[i])) { 
+            result += `<b>${inputNum[i]}</b> — є, але не на своєму місці<br>`;
+            historyEntry += `<span class="yellow-text">${inputNum[i]}</span> `; 
+            lockDigitsUI[i].classList.add('yellow-text');
+        } 
+        else {
+            result += `<b>${inputNum[i]}</b> — немає<br>`;
+            historyEntry += `<span class="red-text">${inputNum[i]}</span> `; 
+            lockDigitsUI[i].classList.add('red-text');
+        }
     }
-}
+
+    GameState.lockHistory.push(historyEntry.trim());
 
     if (fullGuessedDigs === targetNum.length) return true;
     else return result;

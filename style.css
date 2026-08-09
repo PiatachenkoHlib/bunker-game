@@ -240,13 +240,15 @@ body {
 .matrix-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: auto repeat(10, 1fr);
     width: 100%;
-    row-gap: 20px; /* Збільшена відстань по вертикалі між цифрами */
+    flex-grow: 1;
+    row-gap: 2px;
     column-gap: 0;
 }
 
 .matrix-col-header {
-    font-size: 3rem; /* Збільшено в 2 рази */
+    font-size: 3rem;
     font-weight: bold;
     text-align: center;
     border-bottom: 2px solid var(--text-white);
@@ -270,7 +272,7 @@ body {
     justify-content: center;
     align-items: center;
     width: 100%;
-    height: 40px;
+    height: 100%;
     cursor: pointer;
     position: relative;
     color: var(--text-white);
@@ -297,11 +299,6 @@ body {
     width: 40px;
     margin: 0 auto;
 }
-
-/* Wordle кольори для скрипта */
-.lock-digit.wordle-green { background-color: var(--wordle-green); }
-.lock-digit.wordle-yellow { background-color: var(--wordle-yellow); }
-.lock-digit.wordle-red { background-color: var(--alert-red); }
 
 /* Вибір гравців */
 .player-count-selector {

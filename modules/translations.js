@@ -3,7 +3,7 @@ import { startTimer } from './timer.js';
 import { outputData, outputText } from './text.js';
 import { generateEvent } from './events.js';
 import { giveHints } from './hints.js';
-import { state1, stateRole, stateRound, btnRestart, restartModal } from './dom.js';
+import { state1, stateRole, stateRound, btnRestart, restartModal, lockDigitsUI } from './dom.js';
 
 // Методи переходів
 export function toBrief() {
@@ -35,6 +35,7 @@ export function toNewRound() {
     const btn2 = document.getElementById('btn-timer-matrix');
     if (btn1) { btn1.disabled = false; btn1.classList.remove('disactive'); }
     if (btn2) { btn2.disabled = false; btn2.classList.remove('disactive'); }
+    lockDigitsUI.forEach(el => el.classList.remove('green-text', 'yellow-text', 'red-text'));
 
 
     document.getElementById('round-title').textContent = `РАУНД ${GameState.currentRound}/${GameState.roundsNum}`;
@@ -111,6 +112,7 @@ export function toRestart() {
     GameState.lockHistory = [];
     GameState.timerGlitch = false;
     document.getElementById('notepad-check-container')?.classList.add('hidden');
+    lockDigitsUI.forEach(el => el.classList.remove('green-text', 'yellow-text', 'red-text'));
     
     if (GameState.activeTimer) clearInterval(GameState.activeTimer); // Зупиняємо таймер
 

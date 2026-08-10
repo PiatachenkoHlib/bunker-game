@@ -2,6 +2,8 @@ import { GameState } from './state.js';
 import { getRandomInt } from './utils.js';
 import { outputText } from './text.js';
 import { toDiscuss } from './translations.js';
+import { openHints } from './hints.js';
+import { getOpenHintsHTML } from './hints.js';
 
 class Event {
     constructor(name, description, action) {
@@ -60,10 +62,10 @@ export const GameEvents = {
         return "ДИВЕРСАНТІВ:" + sabotCount;
     }),
 
-    diagnostic: new Event("ДІАГНОСТИКА", "Замок генерує <b>1 додаткову відкриту підказку</b>.", () => {
-        let hint = GameState.hintsList[GameState.nextHintNumber];
-        GameState.nextHintNumber++;
-        return "ПІДКАЗКА <br>" + hint;
+    diagnostic: new Event("ДІАГНОСТИКА", "Замок генерує 1 додаткову відкриту підказку.", () => {
+        let opened = openHints(1);
+        if (opened.length > 0) return "ПІДКАЗКА <br>" + opened[0].text;
+        return "Нових підказок немає.";
     }),
 
     descript: new Event("ДЕШИФРУВАННЯ", "На цьому раунді замок змінює логіку. Замість загальної індикації, він підсвічує кожну конкретну цифру окремо (<b>Червоний/Жовтий/Зелений</b>), точно вказуючи, де допущена помилка.", () => {
@@ -86,10 +88,7 @@ export const GameEvents = {
     }),
 
     recall: new Event("ЗГАДАТИ ВСЕ", "Замок показує всі відомі підказки, а також всю історію вводів кодів з їх результатами.", () => {
-        let hintsStr = "";
-        for (let i = 0; i < GameState.nextHintNumber; i++) {
-            hintsStr += `<li>${GameState.hintsList[i]}</li>`;
-        }
+        let hintsStr = getOpenHintsHTML();
         
         let historyStr = "";
         if (GameState.lockHistory.length > 0) {

@@ -2,7 +2,6 @@ import { GameState } from './state.js';
 import { startTimer } from './timer.js';
 import { outputData, outputText } from './text.js';
 import { generateEvent } from './events.js';
-import { giveHints } from './hints.js';
 import { state1, stateRole, stateRound, btnRestart, restartModal, lockDigitsUI } from './dom.js';
 
 // Методи переходів
@@ -101,14 +100,13 @@ export function toRestart() {
     // 1. Скидаємо глобальні змінні
     GameState.currentPlayer = 1;
     GameState.currentRound = 0;
-    GameState.nextHintNumber = 0;
     GameState.currentTime = 0;
     GameState.isWordleCheck = false;
     GameState.isBlocked = false;
     GameState.hasBlockOccurred = false;
     GameState.hasDecryptionOccurred = false;
     GameState.roleDeck = [];
-    GameState.hintsList = [];
+    GameState.allHints = [];
     GameState.lockHistory = [];
     GameState.timerGlitch = false;
     document.getElementById('notepad-check-container')?.classList.add('hidden');

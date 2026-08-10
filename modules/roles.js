@@ -3,9 +3,8 @@ import { getRandomInt } from './utils.js';
 import { startTimer } from './timer.js';
 import { toNewRound, toBrief } from './translations.js';
 import { outputText } from './text.js';
-import { giveHints } from './hints.js';
 import { roleCardInner } from './dom.js';
-
+import { getOpenHintsHTML, openHints } from './hints.js';
 
 const Roles = {
     CIVIC: 'Мирний',
@@ -86,8 +85,10 @@ export function endHold(e) {
             let briefTime = GameState.playersNumber * 2 * 60;
             startTimer(briefTime, 'timer-display', toNewRound);
             
-            let waitTime = (5 * GameState.nextHintNumber) + 5;
-            outputText("ПОЧАТКОВІ ПІДКАЗКИ", giveHints(GameState.nextHintNumber), toBrief, waitTime);
+            openHints(GameState.playersNumber);
+            
+            let waitTime = (5 * GameState.playersNumber) + 5;
+            outputText("ПОЧАТКОВІ ПІДКАЗКИ", getOpenHintsHTML(), toBrief, waitTime);
         } else {
             setTimeout(updateRoleScreen, 300);
         }

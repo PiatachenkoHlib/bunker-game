@@ -13,7 +13,7 @@ setupListeners();
 // ПОЧАТОК ГРИ
 export function startGame() {
     GameState.gameCode = generateCode();
-    GameState.hintsList = generateHints(GameState.gameCode);
+    GameState.allHints = generateHints(GameState.gameCode);
     GameState.discusTime = GameState.playersNumber * 60;
 
     GameState.roundsNum = 10 - GameState.playersNumber;

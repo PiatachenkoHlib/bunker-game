@@ -16,12 +16,11 @@ export const GameState = {
     lockHistory: [],
     timerGlitch: false,
 
-    hintsList: [],
-    nextHintNumber: 0,
+    allHints: [],
 
     roleDeck: [],
     playerRoles: [],
-    
+
     activeTimer: null,
     autoActionTimeout: null
 };

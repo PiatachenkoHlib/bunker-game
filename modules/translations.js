@@ -111,6 +111,14 @@ export function toRestart() {
     GameState.timerGlitch = false;
     document.getElementById('notepad-check-container')?.classList.add('hidden');
     lockDigitsUI.forEach(el => el.classList.remove('green-text', 'yellow-text', 'red-text'));
+
+    // Очищення блокнота
+    const cells = document.querySelectorAll('.matrix-cell');
+    cells.forEach(cell => {
+        cell.dataset.state = 0;
+        cell.classList.remove('crossed', 'circled');
+    });
+    document.getElementById('notepad-check-container')?.classList.add('invisible');
     
     if (GameState.activeTimer) clearInterval(GameState.activeTimer); // Зупиняємо таймер
 

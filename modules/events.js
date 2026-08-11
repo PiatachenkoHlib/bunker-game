@@ -15,12 +15,19 @@ class Event {
 
     execute() {
         let dynamicText = "";
+        let displayTime = 10; // Стандартний час за замовчуванням
         
-        // Виконуємо дію. Якщо вона повертає рядок (наприклад, підказку), зберігаємо його
         if (this.action) {
             let result = this.action();
             if (result) {
-                dynamicText = "<br> <br> " + result;
+                // Якщо екшн повернув об'єкт із текстом і часом
+                if (typeof result === 'object' && result.text) {
+                    dynamicText = "<br> <br> " + result.text;
+                    displayTime = result.time || 10;
+                } else {
+                    // Якщо екшн повернув просто рядок (для інших подій)
+                    dynamicText = "<br> <br> " + result;
+                }
             }
         }
         
@@ -28,8 +35,7 @@ class Event {
 
         if (GameState.autoActionTimeout) clearTimeout(GameState.autoActionTimeout);
         
-        // Додаємо динамічний текст до базового опису, якщо він є
-        outputText("ПОДІЯ: " + this.name, this.description + dynamicText, toDiscuss, 10);
+        outputText("ПОДІЯ: " + this.name, this.description + dynamicText, toDiscuss, displayTime);
     }
 }
 
@@ -89,15 +95,19 @@ export const GameEvents = {
 
     recall: new Event("ЗГАДАТИ ВСЕ", "Замок показує всі відомі підказки, а також всю історію вводів кодів з їх результатами.", () => {
         let hintsStr = getOpenHintsHTML();
+        let historyStr = GameState.lockHistory.length > 0 ? GameState.lockHistory.join('<br>') : "Історія порожня.";
         
-        let historyStr = "";
-        if (GameState.lockHistory.length > 0) {
-            historyStr = GameState.lockHistory.join('<br>');
-        } else {
-            historyStr = "Історія порожня.";
-        }
+        let textResult = `<b>ВІДОМІ ПІДКАЗКИ:</b><ul>${hintsStr}</ul><b>ІСТОРІЯ ВВОДІВ:</b><br><div style="font-size: 1.5rem; letter-spacing: 2px;">${historyStr}</div>`;
         
-        return `<b>ВІДОМІ ПІДКАЗКИ:</b><ul>${hintsStr}</ul><b>ІСТОРІЯ ВВОДІВ:</b><br><div style="font-size: 1.5rem; letter-spacing: 2px;">${historyStr}</div>`;
+        // Вираховуємо час: 5 секунд база + 3 сек за кожну підказку + 2 сек за кожен ввід
+        let openHintsCount = GameState.allHints.filter(h => h.isOpen).length;
+        let historyCount = GameState.lockHistory.length;
+        let calcTime = 5 + (openHintsCount * 5) + (historyCount * 5);
+
+        return {
+            text: textResult,
+            time: calcTime
+        };
     }),
 
     liveNotepad: new Event("ЖИВИЙ БЛОКНОТ", "Дозволяє перевірити три обведені цифри в блокноті (по одній на кожний стовпець). Якщо в стовпці обведено декілька — перевіряється найменша.", () => {

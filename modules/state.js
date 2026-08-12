@@ -18,6 +18,8 @@ export const GameState = {
 
     allHints: [],
 
+    isPassDeviceActive: false,
+
     roleDeck: [],
     playerRoles: [],
 

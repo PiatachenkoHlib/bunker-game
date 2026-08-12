@@ -297,7 +297,11 @@ body {
     border: 3px solid var(--alert-red);
     border-radius: 50%;
     width: 40px;
-    margin: 0 auto;
+    height: 40px; /* Фіксуємо висоту, щоб не було овалів */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: auto;
 }
 
 /* Вибір гравців */
@@ -434,4 +438,8 @@ body {
     pointer-events: none;
     cursor: not-allowed;
     box-shadow: none;
+}
+
+.invisible {
+    visibility: hidden;
 }

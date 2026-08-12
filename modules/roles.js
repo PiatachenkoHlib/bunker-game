@@ -80,15 +80,7 @@ export function endHold(e) {
     if (holdDuration >= 500) {
         GameState.currentPlayer++;
         if (GameState.currentPlayer > GameState.playersNumber) {
-            GameState.nextHintNumber = GameState.playersNumber; 
-            
-            let briefTime = GameState.playersNumber * 2 * 60;
-            startTimer(briefTime, 'timer-display', toNewRound);
-            
-            openHints(GameState.playersNumber);
-            
-            let waitTime = (5 * GameState.playersNumber) + 5;
-            outputText("ПОЧАТКОВІ ПІДКАЗКИ", getOpenHintsHTML(), toBrief, waitTime);
+            toBrief(); // Просто переходимо на брифінг
         } else {
             setTimeout(updateRoleScreen, 300);
         }

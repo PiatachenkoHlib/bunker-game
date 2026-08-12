@@ -118,7 +118,7 @@ export const GameEvents = {
         // Скидаємо стан інтерфейсу Блокнота перед показом
         if (resBox) resBox.classList.add('hidden');
         if (btnCheck) btnCheck.classList.remove('hidden');
-        if (checkContainer) checkContainer.classList.remove('hidden');
+        if (checkContainer) checkContainer.classList.remove('invisible');
     })
 };
 

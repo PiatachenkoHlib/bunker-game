@@ -100,5 +100,3 @@ function toggleCellState(cell) {
     if (state === 1) cell.classList.add('crossed');
     else if (state === 2) cell.classList.add('circled');
 }
-
-// Зупинка проведення мишею

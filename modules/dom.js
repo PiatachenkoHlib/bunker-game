@@ -1,7 +1,7 @@
 import { GameState } from './state.js';
 import { startGame } from '../scrypt.js';
 import { generateEvent, GameEvents } from './events.js';
-import { toRestart, toNewRound, toInputCode } from './translations.js';
+import { toRestart, toNewRound, toInputCode, toPreRoundOne } from './translations.js';
 import { inputCode } from './lock.js';
 import { outputText, rules } from './text.js';
 import { startHold, endHold } from './roles.js';
@@ -97,6 +97,12 @@ export function setupListeners() {
         startGame();
     });
 
+    // Кнопка підтвердження передачі пристрою
+    document.getElementById('btn-confirm-pass').addEventListener('click', () => {
+        document.getElementById('round-pass-device').classList.add('hidden');
+        document.getElementById('round-actions').classList.remove('hidden');
+    });
+
     // Кнопка "Згенерувати подію"
     document.getElementById('btn-gen-event').addEventListener('click', () => {
         generateEvent(); // Ця функція викличе рандом і виведе подію на екран
@@ -124,17 +130,23 @@ export function setupListeners() {
     roleCard.addEventListener('touchstart', startHold);
     window.addEventListener('touchend', endHold);
 
-    // Кнопка "Пропустити" / "Перейти до вводу"
+    // --- Логіка пропуску таймера ---
     document.getElementById('btn-skip-discuss').addEventListener('click', () => {
-        if (GameState.activeTimer) clearInterval(GameState.activeTimer); // Обов'язково вбиваємо таймер
+        if (GameState.activeTimer) clearInterval(GameState.activeTimer); 
         
         if (GameState.currentRound === 0) {
-            // Якщо ми на брифінгу, переходимо одразу до нового раунду
-            toNewRound();
+            // З брифінгу ми тепер йдемо на видачу підказок
+            toPreRoundOne();
         } else {
-            // Якщо це звичайний раунд, переходимо до фази вводу коду
             toInputCode();
         }
+    });
+
+    // --- Кнопка підтвердження передачі пристрою ---
+    document.getElementById('btn-confirm-pass').addEventListener('click', () => {
+        document.getElementById('pass-device-overlay').classList.add('hidden');
+        GameState.isPassDeviceActive = false;
+        document.getElementById('round-actions').classList.remove('hidden');
     });
 
     // Кнопка "ВВІД"

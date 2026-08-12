@@ -71,6 +71,14 @@
 
             <!-- Динамічний контейнер під замком -->
             <div id="dynamic-round-area">
+                <!-- Вікно Передачі Пристрою (Оверлей) -->
+                <div id="pass-device-overlay" class="overlay hidden" style="justify-content: center; z-index: 105;">
+                    <div class="column-box" style="text-align: center; cursor: default;">
+                        <h2 style="margin-bottom: 20px;">ПЕРЕДАЧА ПРИСТРОЮ</h2>
+                        <p style="margin-bottom: 30px; font-size: 1.2rem;">Відлік розпочато. Натиском кнопки нижче підтвердьте, що ви - гравець, який у цьому раунді має керувати пристроєм, і ви цілком його контроюєте.</p>
+                        <button class="btn btn-green btn-wide" id="btn-confirm-pass" style="margin-bottom: 0;">ПІДТВЕРДЖУЮ</button>
+                    </div>
+                </div>
                 
                 <!-- Стан 5: Вибір дії -->
                 <div id="round-actions" class="dynamic-block">
@@ -101,9 +109,10 @@
         <button class="btn" id="btn-manual-7">Ізоляція</button>
         <button class="btn" id="btn-manual-4">Розкриття</button>
         <button class="btn" id="btn-manual-5">Діагностика</button>
-        <button class="btn" id="btn-manual-6">Дешифрування</button>
         <button class="btn" id="btn-manual-9">Згадати все</button>
         <button class="btn" id="btn-manual-10">Живий блокнот</button>
+        <button class="btn" id="btn-manual-6">Дешифрування</button>
+
     </div>
     <button class="btn btn-wide" id="btn-back-to-actions">Назад</button>
 </div>
@@ -151,8 +160,8 @@
                 </div>
 
                 <!-- Контейнер для "Живого блокнота" -->
-                <div id="notepad-check-container" class="hidden" style="width: 100%; margin-top: 20px; display: flex; flex-direction: column; align-items: center;">
-                    <button id="btn-check-notepad" class="btn btn-green btn-wide" style="margin-bottom: 0;">ПЕРЕВІРКА</button>
+                <div id="notepad-check-container" class="invisible" style="width: 100%; margin-top: 20px; display: flex; flex-direction: column; align-items: center; min-height: 70px;">
+                    <button id="btn-check-notepad" class="btn btn-wide" style="margin-bottom: 0;">ПЕРЕВІРКА</button>
                     <div id="matrix-check-results" class="hidden" style="display: flex; justify-content: space-around; width: 100%; font-size: 2.5rem; margin-top: 15px;">
                         <div id="check-res-1"></div>
                         <div id="check-res-2"></div>

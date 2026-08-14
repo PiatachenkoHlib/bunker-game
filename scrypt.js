@@ -4,6 +4,7 @@ import { initMatrix } from './modules/matrix.js';
 import { GameState } from './modules/state.js';
 import { generateHints } from './modules/hints.js';
 import { initRoles, assignAllRoles, updateRoleScreen } from './modules/roles.js';
+import { outputData } from './modules/text.js';
 
 // --- Ініціалізація гри ---
 initLock();
@@ -16,12 +17,12 @@ export function startGame() {
     GameState.allHints = generateHints(GameState.gameCode);
     GameState.discusTime = GameState.playersNumber * 60;
 
-    GameState.roundsNum = 10 - GameState.playersNumber;
+    GameState.roundsNum = 9 - GameState.playersNumber;
 
     initRoles(GameState.playersNumber);
 
     assignAllRoles();
 
     GameState.currentPlayer = 1;
-    updateRoleScreen(); // Заповнюємо картку для першого гравця
+    updateRoleScreen();
 }

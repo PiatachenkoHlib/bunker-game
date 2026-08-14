@@ -9,13 +9,13 @@ import { openHints, getOpenHintsHTML } from './hints.js';
 export function toBrief() {
     stateRole.classList.add('hidden');
     stateRound.classList.remove('hidden');
+    GameState.isLockActive = false;
     
-    document.getElementById('round-title').textContent = "ФАЗА 0: БРИФІНГ";
+    document.getElementById('round-title').textContent = "БРИФІНГ";
     
     // Залишаємо ТІЛЬКИ таймер
     document.getElementById('round-actions').classList.add('hidden');
     document.getElementById('round-input').classList.add('hidden');
-    document.getElementById('round-result').classList.add('hidden');
     document.getElementById('round-manual-event').classList.add('hidden');
     document.getElementById('round-timer').classList.remove('hidden');
     document.getElementById('btn-timer-matrix').classList.add('hidden');
@@ -35,16 +35,22 @@ export function toPreRoundOne() {
     let waitTime = (5 * GameState.playersNumber) + 5;
     
     // Після закриття вікна підказок — запускаємо Раунд 1
-    outputText("ПОЧАТКОВІ ПІДКАЗКИ", getOpenHintsHTML(), toNewRound, waitTime);
+    outputText("ПОЧАТКОВІ ПІДКАЗКИ", `<ul>${getOpenHintsHTML()}</ul>`, toNewRound, waitTime);
 }
 
 export function toNewRound() {
+    if (GameState.currentRound >= GameState.roundsNum) {
+        toLose();
+        return; // Зупиняємо функцію, щоб цикл не продовжувався
+    }
+
     GameState.isWordleCheck = false;
     GameState.isBlocked = false;
     GameState.currentRound++;
     GameState.currentTime = GameState.discusTime;
     GameState.timerGlitch = false;
     GameState.isPassDeviceActive = true; // Активуємо режим "Передачі"
+    GameState.isLockActive = false;
     
     document.getElementById('notepad-check-container')?.classList.add('invisible');
     
@@ -62,8 +68,9 @@ export function toNewRound() {
     document.getElementById('round-actions').classList.add('hidden');
     document.getElementById('round-timer').classList.add('hidden');
     document.getElementById('round-input').classList.add('hidden');
-    document.getElementById('round-result').classList.add('hidden');
     document.getElementById('round-manual-event').classList.add('hidden');
+    const roundScreen = document.getElementById('state-round');
+    roundScreen.querySelector('.universal-info-box')?.classList.add('hidden');
     
     // ПОКАЗУЄМО ОВЕРЛЕЙ ПЕРЕДАЧІ
     document.getElementById('pass-device-overlay').classList.remove('hidden');
@@ -82,51 +89,16 @@ export function toNewRound() {
             
             if (GameState.activeTimer) clearInterval(GameState.activeTimer); // Зупиняємо таймер
             outputData("РАУНД ПРОПУЩЕНО", "Ви надто довго передавали пристрій. Час вийшов!", "alert-text");
-            setTimeout(toNewRound, 5000); // Перекидаємо на наступний раунд
+            GameState.transitionTimeout = setTimeout(toNewRound, 5000); // Перекидаємо на наступний раунд
         } else {
             generateEvent(); // Якщо все ок — просто генеруємо подію
         }
     }, (GameState.discusTime / 2) * 1000);
 }
 
-/*
-export function toNewRound() {
-    GameState.isWordleCheck = false;
-    GameState.isBlocked = false;
-    GameState.currentRound++;
-    GameState.currentTime = GameState.discusTime;
-    GameState.timerGlitch = false;
-    document.getElementById('notepad-check-container')?.classList.add('hidden');
-    const btn1 = document.getElementById('btn-open-matrix');
-    const btn2 = document.getElementById('btn-timer-matrix');
-    if (btn1) { btn1.disabled = false; btn1.classList.remove('disactive'); }
-    if (btn2) { btn2.disabled = false; btn2.classList.remove('disactive'); }
-    lockDigitsUI.forEach(el => el.classList.remove('green-text', 'yellow-text', 'red-text'));
-
-
-    document.getElementById('round-title').textContent = `РАУНД ${GameState.currentRound}/${GameState.roundsNum}`;
-    
-    // Ховаємо ВСІ блоки, окрім стартових дій
-    document.getElementById('round-timer').classList.add('hidden');
-    document.getElementById('round-input').classList.add('hidden');
-    document.getElementById('round-result').classList.add('hidden');
-    document.getElementById('round-manual-event').classList.add('hidden'); // Новий блок
-    
-    // Переконуємось, що показуємо меню дій
-    document.getElementById('round-actions').classList.remove('hidden');
-
-    GameState.discusTime = GameState.playersNumber * 60;
-    startTimer(GameState.discusTime, 'timer-display', toInputCode);
-    
-    // Автогенерація події
-    if (GameState.autoActionTimeout) clearTimeout(GameState.autoActionTimeout);
-    GameState.autoActionTimeout = setTimeout(() => {
-        generateEvent();
-    }, (GameState.discusTime / 2) * 1000);
-}
-*/
-
 export function toDiscuss() {
+    GameState.isLockActive = !GameState.isBlocked;
+    
     // Ховаємо обидва можливих стартових екрани
     document.getElementById('round-actions').classList.add('hidden');
     document.getElementById('round-manual-event').classList.add('hidden'); 
@@ -142,12 +114,13 @@ export function toDiscuss() {
 }
 
 export function toInputCode() {
+    GameState.isLockActive = !GameState.isBlocked;
     document.getElementById('round-timer').classList.add('hidden');
     document.getElementById('round-input').classList.remove('hidden');
     
     if (GameState.isBlocked) {
         outputData("ВВІД ЗАБЛОКОВАНО", "Подія 'Блок' діє до кінця раунду.");
-        setTimeout(toNewRound, 5000); // Через 5 секунд перекидаємо на новий раунд
+        GameState.transitionTimeout = setTimeout(toNewRound, 5000); // Через 5 секунд перекидаємо на новий раунд
         return;
     }
 
@@ -157,11 +130,11 @@ export function toInputCode() {
 }
 
 export function toWin() {
-    outputData('КОД ПРАВИЛЬНИЙ!', 'Перемога мирних', 'title-secondary green-text');
+    outputData('КОД ПРАВИЛЬНИЙ!', "Двері повільно відчиняються. Гравці глибоко вдихають свіже повітря...", 'title-secondary green-text');
 }
 
 export function toLose() {
-    outputData('КОД НЕПРАВИЛЬНИЙ! Спроби закінчились', 'Перемога диверсантів', 'alert-text');
+    outputData('КОД НЕПРАВИЛЬНИЙ! Спроби закінчились', `Система виявилась сильнішою. Мирні назавжди залишаться в цих холодних стінах...<br>Справжній код був: ${GameState.gameCode}<b></b>`, 'alert-text');
 }
 
 export function toRestart() {
@@ -169,16 +142,20 @@ export function toRestart() {
     GameState.currentPlayer = 1;
     GameState.currentRound = 0;
     GameState.currentTime = 0;
+    GameState.isLockActive = false;
     GameState.isWordleCheck = false;
     GameState.isBlocked = false;
     GameState.hasBlockOccurred = false;
     GameState.hasDecryptionOccurred = false;
     GameState.roleDeck = [];
     GameState.allHints = [];
+    GameState.openedHints = [];
     GameState.lockHistory = [];
     GameState.timerGlitch = false;
-    document.getElementById('notepad-check-container')?.classList.add('hidden');
-    lockDigitsUI.forEach(el => el.classList.remove('green-text', 'yellow-text', 'red-text'));
+    lockDigitsUI.forEach(el => {
+        el.classList.remove('green-text', 'yellow-text', 'red-text')
+        el.textContent = "0";
+    });
 
     // Очищення блокнота
     const cells = document.querySelectorAll('.matrix-cell');
@@ -189,6 +166,8 @@ export function toRestart() {
     document.getElementById('notepad-check-container')?.classList.add('invisible');
     
     if (GameState.activeTimer) clearInterval(GameState.activeTimer); // Зупиняємо таймер
+    if (GameState.autoActionTimeout) clearTimeout(GameState.autoActionTimeout); // ДОДАЙ ЦЕЙ РЯДОК
+    if (GameState.transitionTimeout) clearTimeout(GameState.transitionTimeout);
 
     // 2. Ховаємо всі ігрові екрани та оверлеї
     stateRole.classList.add('hidden');
@@ -200,7 +179,6 @@ export function toRestart() {
     document.getElementById('round-actions').classList.remove('hidden');
     document.getElementById('round-timer').classList.add('hidden');
     document.getElementById('round-input').classList.add('hidden');
-    document.getElementById('round-result').classList.add('hidden');
     document.getElementById('round-manual-event').classList.add('hidden');
 
     // 4. Повертаємо стартовий екран

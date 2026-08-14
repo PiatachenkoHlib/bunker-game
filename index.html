@@ -22,6 +22,12 @@
                 <div class="lock-digit">0</div>
             </div>
 
+           <!-- УНІВЕРСАЛЬНИЙ КОНТЕЙНЕР ДЛЯ ІНФОРМАЦІЇ ПІД ЗАМКОМ -->
+            <div class="universal-info-box hidden" style="margin-bottom: 20px; padding: 0 20px; width: 100%;">
+                <h2 class="info-title" style="margin-bottom: 10px;"></h2>
+                <div class="info-text" style="font-size: 1.2rem; line-height: 1.4;"></div>
+            </div>
+
             <div class="player-count-selector">
                 <span class="arrow-btn" id="btn-minus">◀</span>
                 <span class="player-count-text">Кількість гравців: <br><span id="player-count">4</span></span>
@@ -67,6 +73,11 @@
                 <div class="lock-digit-container">
                     <div class="lock-digit" id="digit-3">0</div>
                 </div>
+            </div>
+
+            <div class="universal-info-box hidden" style="margin-bottom: 20px; padding: 0 20px; width: 100%;">
+                <h2 class="info-title" style="margin-bottom: 10px;"></h2>
+                <div class="info-text" style="font-size: 1.2rem; line-height: 1.4;"></div>
             </div>
 
             <!-- Динамічний контейнер під замком -->
@@ -123,24 +134,22 @@
                     <div class="timer-text red-text" id="input-timer-display">0:10</div>
                 </div>
 
-                <!-- Стан 10: Результат вводу -->
-                <div id="round-result" class="dynamic-block hidden">
-                    <h2 class="alert-text" id="result-status">НЕПРАВИЛЬНИЙ КОД!</h2>
-                    <div class="result-stats" id="result-stats-box">
-                        <p>Вгадано цифр: <span id="stat-total">2</span></p>
-                        <p>З них на своєму місці: <span id="stat-exact">1</span></p>
-                    </div>
-                </div>
-
             </div>
         </section>
 
         <!-- Універсальне вікно виводу тексту (Оверлей) -->
         <div id="overlay" class="overlay hidden">
             <h2 class="title-secondary" id="overlay-title">ЗАГОЛОВОК</h2>
-            <div class="column-box hints-box" id="overlay-column">
-                <div id="overlay-text-content">
+            <div class="column-box hints-box" id="overlay-column" style="position: relative; overflow: hidden; padding-bottom: 40px; align-items: stretch;">
+                
+                <!-- ДОДАНО: overflow-y: auto та height: 100% для внутрішньої прокрутки -->
+                <div id="overlay-text-content" style="overflow-y: auto; height: 100%; width: 100%;">
                     <!-- Сюди JS динамічно вставлятиме текст -->
+                </div>
+                
+                <!-- ДОДАНО: id="time-bar-wrapper" та клас hidden за замовчуванням -->
+                <div id="time-bar-wrapper" class="hidden" style="position: absolute; bottom: 20px; left: 20px; right: 20px; height: 10px; background-color: var(--bg-dark); border-radius: 5px; overflow: hidden;">
+                    <div id="overlay-time-bar" style="height: 100%; background-color: var(--alert-red); width: 100%;"></div>
                 </div>
             </div>
         </div>

@@ -10,6 +10,7 @@ export const GameState = {
     discusTime: 0,
     currentTime: 0,
 
+    isLockActive: false,
     isWordleCheck: false,
     isBlocked: false,
 
@@ -17,6 +18,7 @@ export const GameState = {
     timerGlitch: false,
 
     allHints: [],
+    openedHints: [],
 
     isPassDeviceActive: false,
 
@@ -24,5 +26,6 @@ export const GameState = {
     playerRoles: [],
 
     activeTimer: null,
-    autoActionTimeout: null
+    autoActionTimeout: null,
+    transitionTimeout: null
 };

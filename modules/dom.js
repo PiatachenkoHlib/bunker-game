@@ -97,12 +97,6 @@ export function setupListeners() {
         startGame();
     });
 
-    // Кнопка підтвердження передачі пристрою
-    document.getElementById('btn-confirm-pass').addEventListener('click', () => {
-        document.getElementById('round-pass-device').classList.add('hidden');
-        document.getElementById('round-actions').classList.remove('hidden');
-    });
-
     // Кнопка "Згенерувати подію"
     document.getElementById('btn-gen-event').addEventListener('click', () => {
         generateEvent(); // Ця функція викличе рандом і виведе подію на екран

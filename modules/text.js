@@ -1,53 +1,44 @@
 import { GameState } from './state.js';
 
-export let rules = `<h2>1. Загальна концепція та Мета</h2>
-<p>Гравці опиняються в замкненому бункері. Їхня мета — розгадати тризначний код на замку, де усі три цифри різні (від 0 до 9). На це є обмежена кількість раундів. Серед гравців можуть бути <b>Диверсанти</b>. Диверсант знає справжній код від самого початку, і його мета — заплутати мирних гравців, маніпулювати обговоренням та завадити їм підібрати код до закінчення раундів. Диверсантів може і не буде, оскільки колода карт ролей на роздачу завжди містить більше карт, ніж гравців.</p>
+export let rules = `<h2>Загальні правила та Мета</h2>
+<p>Гравці опиняються в замкненому бункері. Їхня мета — розгадати тризначний код на замку, де всі три цифри різні. На це є обмежена кількість раундів. Серед гравців можуть бути <b>Диверсанти</b>. Диверсант знає справжній код від самого початку, і його мета — заплутати мирних гравців, маніпулювати обговоренням та завадити їм підібрати код до закінчення раундів. Диверсантів може і не буде, оскільки колода карт ролей на роздачу завжди містить більше карт, ніж гравців.
+Кількість раундів для кожної гри розраховується як 9 — кількість гравців. В колоді карт ролей завжди міститься по одній "мирній" на кожного гравця і 1 (для 2-4 гравців) або 2 (для 5-6) картки диверсантів.</p>
 
-<h2>2. Механіка Замка (Індикація)</h2>
-<p>Гра використовує систему індикації Mastermind. Після введення коду замок не вказує статус конкретних цифр, а видає лише загальний результат:</p>
+<h2>Роль замка</h2>
+<p>Додаток — не просто пасивний інструмент, а повноцінна третя сторона конфлікту. Мехінаки замка, елементи інтерфейсу, логіки спеціально зроблені так, щоб створювати дискомфорт для мирних, і можуть зіграти роль у критичній ситуаці</p>
+
+<h2>Хід гри</h2>
+<h3>Роздача ролей</h3>
+<p>Гравці по черзі, передаючи пристрій з рук в руки, приховано переглядають свої ролі, а диверсанти - ще й запам'ятовують код.</p>
+<h3>Брифінг</h3>
+<p>Триває 5 хв. Під час брифінгу гравцям слід з'ясувати:
 <ul>
-<li>Кількість вгаданих цифр, які стоять на своїх правильних місцях.</li>
-<li>Кількість вгаданих цифр, які є в коді, але стоять не на своєму місці.</li>
+<li>як вони контролюватимуть пристрій (передаватимуть по черзі або назначать капітана)</li>
+<li>як занотовуватимуть інформацію</li>
+<li>як будуть спілкуватися під час події "Мовчанка" (чит. нижче)</li>
+<li>інші нюанси спілкування</li>
 </ul>
+Після брифінгу буде виведено математичні підказки про код — напр., "одна цифра більша за іншу", або "в коді є 2 парні цифри підряд". Гравцям слід занотувати ці підказки, уважно стежачи за умовами, оскільки після закриття тексту вони будуть недоступні. Після цього починається новий раунд.</p>
 
-<h2>3. Баланс за кількістю гравців</h2>
-<p>Кількість раундів динамічно адаптується під групу за формулою: <b>10 мінус кількість гравців</b>.</p>
-<ul>
-<li><b>2 гравця:</b> 1 картка диверсанта, 1 зайва картка ролі, 8 раундів.</li>
-<li><b>3-4 гравця:</b> 1 картка диверсанта, 1 зайва картка ролі, 7-6 раундів.</li>
-<li><b>5-6 гравців:</b> 2 картки диверсанта, 2 зайві карти ролі, 5-4 раундів.</li>
-</ul>
+<h3>Основний Раунд (Повторюється)</h3>
+<p><b>Етап 1. Подія середовища</b><br>
+Додаток генерує випадкову подію на поточний раунд. Це може бути блокування вводу, нова підказка або скорочення часу на обговорення. Подію також можна обрати самостійно.</p>
 
-<h2>4. Хід гри</h2>
-<h3>Фаза 0: Брифінг (Тільки на початку гри)</h3>
-<p>Триває кількість гравців х 2 хвилини. Гравці таємно дізнаються свої ролі та отримують видні всім математичні підказки - стільки ж, скільки і гравців (наприклад, "Сума всіх трьох цифр є парним числом" або "У коді немає жодних двох цифр-сусідів"). Вони обговорюють підказки, записують умови та будують перші гіпотези. Замок і кубик у цій фазі неактивні.</p>
+<p><b>Етап 2. Обговорення</b><br>
+Гравці обговорюють гіпотези, пропонують коди для введення. Час розраховано по 1 хвилині на гравця.<b>Замок активний</b>, тому гравці можуть виставляти потенційний код прямо під час обговорення.</p>
 
-<h3>Основний Раунд (Повторюється N разів)</h3>
-<p><b>Крок 1. Подія Середовища (Кидок кубика d6)</b><br>
-Додаток генерує випадкову подію на поточний раунд:<br>
-<ul>
-<li><b>Блок:</b> Ввід коду повністю блокується на цей раунд <i>(може випасти лише 1 раз за гру)</i>.</li>
-<li><b>Поспіх:</b> Час на обговорення скорочується вдвічі.</li>
-<li><b>Мовчанка:</b> Обговорення відбувається повністю без слів — тільки жестами та мімікою.</li>
-<li><b>Розкриття:</b> Додаток відкриває зайві скинуті карти ролей.</li>
-<li><b>Діагностика:</b> Додаток генерує +1 додаткову відкриту підказку.</li>
-<li><b>Дешифрування (Wordle-сканер):</b> Замок змінює логіку. Замість загальної індикації (Mastermind), він підсвічує кожну конкретну цифру окремо (Червоний/Жовтий/Зелений) <i>(може випасти лише 1 раз за гру)</i>.</li>
-</ul></p>
-
-<p><b>Крок 2. Обговорення та Дедукція</b><br>
-Таймер: Кількість гравців × 1 хв.<br>
-Гравці обговорюють гіпотези. <b>Замок активний</b>, тому гравці можуть виставляти потенційний код прямо під час обговорення.</p>
-
-<p><b>Крок 3. Ввід</b><br>
-Таймер: 10 секунд.<br>
-Фінальне вікно для прийняття рішення. Капітан має встигнути натиснути кнопку "ВВІД". Якщо код не відправлено вчасно, спроба згорає.</p>`;
+<p><b>Етап 3. Ввід</b><br>
+10 секунд на ввід коду. Якщо гравці не встигнуть натиснути кнопку — замок перевірить введену комбінацію і, якщо вона неправильна, надасть загальну інформацію — скільки цифр взагалі є в коді, скіьки з них — на своєму місці.</p>
+<br>
+<p>Гра завершується, коли вгадано код (перемога мирних), або коли закінчуються раунди (перемога диверсантів). Успіхів!</p>`;
 
 // Виведення тексту
 export function outputText(title, text, action = null, autoCloseTime = 0) {
     const overlay = document.getElementById('overlay');
     const titleEl = document.getElementById('overlay-title');
     const contentEl = document.getElementById('overlay-text-content');
-    const columnEl = document.getElementById('overlay-column');
+    const timeBarWrapper = document.getElementById('time-bar-wrapper');
+    const timeBar = document.getElementById('overlay-time-bar');
 
     // Очищаємо попередній авто-таймаут, якщо він був
     if (GameState.autoActionTimeout) {
@@ -56,15 +47,28 @@ export function outputText(title, text, action = null, autoCloseTime = 0) {
     }
 
     titleEl.textContent = title;
-    if (text.includes('<li>')) {
-        contentEl.innerHTML = `<ol>${text}</ol>`;
-    } else {
-        contentEl.innerHTML = text.replace(/\n/g, '<br>');
-    }
+    
+    contentEl.innerHTML = text;
 
     overlay.classList.remove('hidden');
 
-    // Якщо задано час — запускаємо автозакриття (Пункт з TODO)
+    // --- Логіка тайм-бару ---
+    if (timeBarWrapper && timeBar) {
+        if (autoCloseTime > 0) {
+            timeBarWrapper.classList.remove('hidden');
+            timeBar.style.transition = 'none';
+            timeBar.style.width = '100%';
+            
+            void timeBar.offsetWidth; 
+            
+            timeBar.style.transition = `width ${autoCloseTime}s linear`;
+            timeBar.style.width = '0%';
+        } else {
+            timeBarWrapper.classList.add('hidden');
+        }
+    }
+    // ------------------------
+
     if (autoCloseTime > 0) {
         GameState.autoActionTimeout = setTimeout(() => {
             overlay.classList.add('hidden');
@@ -72,7 +76,7 @@ export function outputText(title, text, action = null, autoCloseTime = 0) {
         }, autoCloseTime * 1000);
     }
 
-    columnEl.onclick = function() {
+    document.getElementById('overlay-column').onclick = function() {
         if (GameState.autoActionTimeout) {
             clearTimeout(GameState.autoActionTimeout);
             GameState.autoActionTimeout = null;
@@ -81,20 +85,36 @@ export function outputText(title, text, action = null, autoCloseTime = 0) {
         if (action) action();
     };
 }
-
 export function outputData(title, text, titleClass = "alert-text") {
-    document.getElementById('round-actions').classList.add('hidden');
-    document.getElementById('round-timer').classList.add('hidden');
-    document.getElementById('round-input').classList.add('hidden');
-    document.getElementById('round-manual-event').classList.add('hidden');
+    // 1. Знаходимо поточний активний екран (той, що не має класу hidden)
+    const activeScreen = document.querySelector('.screen:not(.hidden)');
+    if (!activeScreen) return;
 
-    const resultBlock = document.getElementById('round-result');
-    const titleEl = document.getElementById('result-status');
-    
-    titleEl.textContent = title;
-    titleEl.className = titleClass; 
-    
-    document.getElementById('result-stats-box').innerHTML = text;
-    
-    resultBlock.classList.remove('hidden');
+    // 2. Шукаємо наш універсальний контейнер саме на цьому екрані
+    const infoBox = activeScreen.querySelector('.universal-info-box');
+    if (!infoBox) return;
+
+    const titleEl = infoBox.querySelector('.info-title');
+    const textEl = infoBox.querySelector('.info-text');
+
+    // 3. Обробка заголовка (Якщо null або порожньо - ховаємо повністю)
+    if (!title || title === "") {
+        titleEl.classList.add('hidden');
+    } else {
+        titleEl.classList.remove('hidden');
+        titleEl.textContent = title;
+        titleEl.className = `info-title ${titleClass}`; 
+    }
+
+    // 4. Вставляємо текст і показуємо контейнер
+    textEl.innerHTML = text;
+    infoBox.classList.remove('hidden');
+
+    // 5. Якщо ми на екрані раунду, треба сховати менюшки і таймери, щоб вони не перекривали текст
+    if (activeScreen.id === 'state-round') {
+        document.getElementById('round-actions')?.classList.add('hidden');
+        document.getElementById('round-timer')?.classList.add('hidden');
+        document.getElementById('round-input')?.classList.add('hidden');
+        document.getElementById('round-manual-event')?.classList.add('hidden');
+    }
 }

@@ -248,6 +248,7 @@ body {
 }
 
 .matrix-col-header {
+    font-family: 'Orbitron', sans-serif;
     font-size: 3rem;
     font-weight: bold;
     text-align: center;
@@ -266,7 +267,7 @@ body {
 
 .matrix-cell {
     font-size: 1.5rem;
-    font-family: 'Orbitron', sans-serif;
+    font-family: var(--font-main);
     text-align: center;
     display: flex;
     justify-content: center;
@@ -285,7 +286,8 @@ body {
 .matrix-cell.crossed::after {
     content: '';
     position: absolute;
-    width: 60%; 
+    width: 60%;
+    max-width: 40px;
     height: 3px;
     background-color: var(--alert-red);
     transform: rotate(-45deg);
@@ -293,15 +295,16 @@ body {
 }
 
 /* Стан 2: Обведення (коло) */
-.matrix-cell.circled {
+.matrix-cell.circled::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 32px;
+    height: 32px;
     border: 3px solid var(--alert-red);
     border-radius: 50%;
-    width: 40px;
-    height: 40px; /* Фіксуємо висоту, щоб не було овалів */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin: auto;
 }
 
 /* Вибір гравців */
@@ -442,4 +445,57 @@ body {
 
 .invisible {
     visibility: hidden;
+}
+
+/* Робимо так, щоб контейнери під замком займали весь вільний простір до низу екрану */
+#dynamic-round-area, .dynamic-block {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    width: 100%;
+}
+
+/* Відштовхуємо конкретні кнопки вниз, залишаючи відступ від нижнього краю */
+#btn-rules, #btn-open-matrix, #btn-timer-matrix {
+    margin-top: auto !important;
+    margin-bottom: 30px !important;
+}
+
+/* --- Форматування текстових екранів (Правила, Підказки) --- */
+.hints-box h1 {
+    font-size: 2.2rem;
+    margin-top: 30px;
+    margin-bottom: 20px;
+}
+
+.hints-box h2 {
+    font-size: 1.6rem;
+    margin-top: 25px;
+    margin-bottom: 15px;
+}
+
+.hints-box h2:first-child {
+    margin-top: 0;
+}
+
+.hints-box h3 {
+    font-size: 1.3rem;
+    margin-top: 20px;
+    margin-bottom: 10px;
+    color: var(--text-white);
+}
+
+.hints-box p {
+    margin-bottom: 15px;
+    line-height: 1.5;
+}
+
+.hints-box ul, .hints-box ol {
+    margin-bottom: 20px;
+    padding-left: 20px;
+    line-height: 1.6;
+}
+
+.hints-box li {
+    margin-bottom: 8px;
 }

@@ -103,73 +103,98 @@ export function inputCode(code) {
     }
     
     outputData("НЕПРАВИЛЬНИЙ КОД", result, 'alert-text');
-    setTimeout(toNewRound, 6000);
+    GameState.transitionTimeout = setTimeout(toNewRound, 6000);
+
+    GameState.isLockActive = false;
 }
 
 // Прокрутка цифр, ініціалізація замка
 export function initLock() {
     lockDigitsUI.forEach((digitElement) => {
-    let startY = 0;
-    let endY = 0;
-    let startTime = 0; // Для вимірювання часу
-    const threshold = 30; 
+        let startY = 0;
+        let endY = 0;
+        let startTime = 0; // Для вимірювання часу
+        const threshold = 30; 
 
-    function updateDigit(delta, timeElapsed) {
-        if (GameState.isBlocked) return; 
+        function updateDigit(delta, timeElapsed) {
+            if (!GameState.isLockActive) return; 
 
-        let val = parseInt(digitElement.textContent);
-        
-        // Визначаємо швидкість (пікселів на мілісекунду)
-        let velocity = Math.abs(delta) / timeElapsed;
-        
-        // Скільки цифр прогорнути за раз
-        let steps = 1;
-        if (velocity > 1.2) steps = 3;      // Дуже швидкий свайп
-        else if (velocity > 0.6) steps = 2; // Середній свайп
+            let val = parseInt(digitElement.textContent);
+            
+            // Визначаємо швидкість (пікселів на мілісекунду)
+            let velocity = Math.abs(delta) / timeElapsed;
+            
+            // Скільки цифр прогорнути за раз
+            let steps = 1;
+            if (velocity > 1.2) steps = 3;      // Дуже швидкий свайп
+            else if (velocity > 0.6) steps = 2; // Середній свайп
 
-        if (delta > 0) {
-            // Свайп ВГОРУ (використовуємо остачу від ділення для циклічності)
-            val = (val + steps) % 10;
-        } else {
-            // Свайп ВНИЗ
-            val = (val - steps + 10) % 10;
+            if (delta > 0) {
+                // Свайп ВГОРУ (використовуємо остачу від ділення для циклічності)
+                val = (val + steps) % 10;
+            } else {
+                // Свайп ВНИЗ
+                val = (val - steps + 10) % 10;
+            }
+            digitElement.textContent = val;
         }
-        digitElement.textContent = val;
-    }
 
-    // --- Обробка Touch ---
-    digitElement.addEventListener('touchstart', (e) => {
-        startY = e.touches[0].clientY;
-        startTime = Date.now();
+        // --- Обробка Touch ---
+        digitElement.addEventListener('touchstart', (e) => {
+            startY = e.touches[0].clientY;
+            startTime = Date.now();
+        });
+
+        digitElement.addEventListener('touchmove', (e) => e.preventDefault(), { passive: false });
+
+        digitElement.addEventListener('touchend', (e) => {
+            endY = e.changedTouches[0].clientY;
+            let timeElapsed = Date.now() - startTime;
+            let deltaY = startY - endY;
+
+            if (Math.abs(deltaY) > threshold) updateDigit(deltaY, timeElapsed);
+        });
+
+        // --- Обробка Миші ---
+        let isMouseDown = false;
+        
+        digitElement.addEventListener('mousedown', (e) => {
+            isMouseDown = true;
+            startY = e.clientY;
+            startTime = Date.now();
+        });
+
+        window.addEventListener('mouseup', (e) => {
+            if (!isMouseDown) return;
+            isMouseDown = false;
+            endY = e.clientY;
+            let timeElapsed = Date.now() - startTime;
+            let deltaY = startY - endY;
+
+            if (Math.abs(deltaY) > threshold) updateDigit(deltaY, timeElapsed);
+        });
     });
 
-    digitElement.addEventListener('touchmove', (e) => e.preventDefault(), { passive: false });
-
-    digitElement.addEventListener('touchend', (e) => {
-        endY = e.changedTouches[0].clientY;
-        let timeElapsed = Date.now() - startTime;
-        let deltaY = startY - endY;
-
-        if (Math.abs(deltaY) > threshold) updateDigit(deltaY, timeElapsed);
-    });
-
-    // --- Обробка Миші ---
-    let isMouseDown = false;
-    
-    digitElement.addEventListener('mousedown', (e) => {
-        isMouseDown = true;
-        startY = e.clientY;
-        startTime = Date.now();
-    });
-
-    window.addEventListener('mouseup', (e) => {
-        if (!isMouseDown) return;
-        isMouseDown = false;
-        endY = e.clientY;
-        let timeElapsed = Date.now() - startTime;
-        let deltaY = startY - endY;
-
-        if (Math.abs(deltaY) > threshold) updateDigit(deltaY, timeElapsed);
-    });
-});
+    // --- Рандомне переключення замка ---
+    setInterval(() => {
+        // Замок крутиться сам лише під час активних раундів (не на брифінгу),
+        // коли він не заблокований подією "БЛОК" і не на екрані передачі
+        if (GameState.isLockActive) {
+            
+            // 10% імовірність кожні 2 секунди
+            if (Math.random() <= 0.10) { 
+                let randIndex = getRandomInt(0, 2); // Обираємо випадкову комірку 0, 1 або 2
+                let digitEl = lockDigitsUI[randIndex];
+                let currentVal = parseInt(digitEl.textContent);
+                
+                // Випадковий напрямок: +1 або -1
+                let change = Math.random() < 0.5 ? 1 : -1; 
+                
+                // Оновлюємо значення (з урахуванням переходу через нуль)
+                digitEl.textContent = (currentVal + change + 10) % 10;
+                
+                setTimeout(() => { digitEl.style.color = ""; }, 300);
+            }
+        }
+    }, 2000);
 }

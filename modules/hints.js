@@ -294,10 +294,8 @@ export function generateHints(code) {
 
 export function getOpenHintsHTML() {
     let result = ``;
-    for (let hint of GameState.allHints) {
-        if (hint.isOpen) {
-            result += `<li>${hint.text}</li>`;
-        }
+    for (let hint of GameState.openedHints) {
+        result += `<li>${hint.text}</li>`;
     }
     return result;
 }
@@ -315,6 +313,7 @@ export function openHints(num) {
     for (let i = 0; i < limit; i++) {
         closedHints[i].isOpen = true;
         newlyOpened.push(closedHints[i]);
+        GameState.openedHints.push(closedHints[i]); 
     }
 
     return newlyOpened;
